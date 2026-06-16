@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="theme-color" content="#07070B" />
+<meta name="apple-mobile-web-app-title" content="Pulse IQ" />
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<link rel="icon" type="image/png" href="icon-512.png" />
+<title>Pulse IQ</title>
+<style>
+:root{
+  --bg:#07070B;--bg2:#0C0C14;
+  --card:rgba(255,255,255,0.045);--card-strong:rgba(255,255,255,0.07);
+  --stroke:rgba(255,255,255,0.09);--txt:#F4F5FA;--muted:#8A8C9B;--faint:#5A5C6B;
+  --recovery:#16EC9A;--activity:#1FB8FF;--sleep:#8B7DFF;--body:#FFB020;--coral:#FF5470;
+  --track:rgba(255,255,255,0.07);--sat:env(safe-area-inset-top);--sab:env(safe-area-inset-bottom);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;}
+body{background:
+    radial-gradient(1200px 700px at 80% -10%, rgba(31,184,255,0.10), transparent 55%),
+    radial-gradient(1000px 600px at -10% 10%, rgba(22,236,154,0.08), transparent 50%),
+    radial-gradient(900px 700px at 50% 120%, rgba(139,125,255,0.10), transparent 55%),
+    var(--bg);min-height:100vh;}
+.app{max-width:1280px;margin:0 auto;padding:calc(var(--sat) + 14px) clamp(14px,3.5vw,32px) 130px;}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+.brand{display:flex;align-items:center;gap:12px;}
+.logo{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--recovery),var(--activity));position:relative;overflow:hidden;flex:0 0 auto;}
+.logo svg{width:26px;height:26px;}
+.brand h1{font-size:clamp(17px,2.4vw,21px);margin:0;letter-spacing:-0.02em;font-weight:700;line-height:1;}
+.brand .sub{font-size:11px;color:var(--muted);letter-spacing:0.14em;text-transform:uppercase;margin-top:3px;}
+.actions{display:flex;align-items:center;gap:8px;}
+.iconbtn{width:42px;height:42px;border-radius:999px;border:1px solid var(--stroke);background:var(--card-strong);
+  color:var(--txt);display:grid;place-items:center;cursor:pointer;backdrop-filter:blur(12px);transition:.2s;flex:0 0 auto;}
+.iconbtn:hover{background:rgba(255,255,255,0.12);}
+.iconbtn svg{width:20px;height:20px;}
+.iconbtn.on{background:linear-gradient(135deg,var(--body),var(--coral));border-color:transparent;color:#1a0f00;}
+.coachbtn{display:flex;align-items:center;gap:9px;border:1px solid var(--stroke);background:var(--card-strong);
+  color:var(--txt);padding:11px 15px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;
+  transition:.2s;backdrop-filter:blur(12px);white-space:nowrap;}
+.coachbtn:hover{background:rgba(255,255,255,0.12);}
+.coachbtn.live{background:linear-gradient(135deg,var(--recovery),var(--activity));color:#04110B;border-color:transparent;}
+.coachbtn .dot{width:8px;height:8px;border-radius:50%;background:var(--recovery);box-shadow:0 0 10px var(--recovery);}
+.coachbtn.live .dot{background:#04110B;box-shadow:none;animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+.greet{margin:6px 0 22px;}
+.greet h2{font-size:clamp(24px,5.5vw,38px);margin:0;font-weight:700;letter-spacing:-0.03em;}
+.greet h2 .accent{background:linear-gradient(135deg,var(--recovery),var(--activity));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.greet p{margin:7px 0 0;color:var(--muted);font-size:14px;max-width:640px;line-height:1.5;}
+
+.view{display:none;animation:fade .45s ease;}
+.view.active{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.grid{display:grid;gap:14px;}
+.cols-hero{grid-template-columns:repeat(4,1fr);}
+.cols-2{grid-template-columns:repeat(2,1fr);}
+.cols-3{grid-template-columns:repeat(3,1fr);}
+@media(max-width:900px){.cols-hero{grid-template-columns:repeat(2,1fr);} .cols-3{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:560px){.cols-2,.cols-3{grid-template-columns:1fr;} }
+
+.card{background:var(--card);border:1px solid var(--stroke);border-radius:22px;padding:18px;
+  backdrop-filter:blur(16px);position:relative;overflow:hidden;transition:.3s;}
+.card .label{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:600;}
+.card.glow{box-shadow:0 0 0 1.5px rgba(22,236,154,.55),0 0 42px rgba(22,236,154,.25);border-color:transparent;transform:translateY(-2px);}
+.section-title{display:flex;align-items:baseline;justify-content:space-between;margin:30px 2px 12px;gap:10px;}
+.section-title h3{margin:0;font-size:16px;font-weight:700;letter-spacing:-0.01em;}
+.section-title span{font-size:12px;color:var(--faint);text-align:right;}
+
+.ring-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:20px 14px;cursor:pointer;}
+.ring-wrap{position:relative;width:120px;height:120px;}
+.ring-wrap .ctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-wrap .ctr .big{font-size:30px;font-weight:800;letter-spacing:-0.03em;line-height:1;}
+.ring-wrap .ctr .unit{font-size:11px;color:var(--muted);margin-top:2px;}
+.ring-card .name{font-size:13px;font-weight:600;margin-top:4px;}
+.ring-card .delta{font-size:11.5px;color:var(--muted);}
+.delta.up{color:var(--recovery);}.delta.down{color:var(--coral);}
+
+.statrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
+.chip{background:rgba(255,255,255,0.05);border:1px solid var(--stroke);border-radius:14px;padding:10px 13px;flex:1 1 110px;min-width:100px;}
+.chip .v{font-size:20px;font-weight:700;letter-spacing:-0.02em;}
+.chip .k{font-size:11px;color:var(--muted);margin-top:2px;}
+.chip .v small{font-size:12px;color:var(--muted);font-weight:600;}
+
+.big-num{font-size:clamp(30px,6vw,40px);font-weight:800;letter-spacing:-0.03em;line-height:1;margin-top:6px;}
+.row-between{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.pill{font-size:11px;font-weight:700;padding:5px 10px;border-radius:999px;letter-spacing:.02em;white-space:nowrap;}
+.pill.good{background:rgba(22,236,154,.14);color:var(--recovery);}
+.pill.warn{background:rgba(255,176,32,.16);color:var(--body);}
+.pill.bad{background:rgba(255,84,112,.16);color:var(--coral);}
+.pill.low{background:rgba(31,184,255,.16);color:var(--activity);}
+.note{font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:12px;}
+.note b{color:var(--txt);font-weight:600;}
+.srctag{font-size:10px;color:var(--faint);display:inline-flex;align-items:center;gap:5px;}
+.srctag::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--recovery);box-shadow:0 0 6px var(--recovery);}
+
+svg{display:block;}
+.axis{font-size:10px;fill:var(--faint);}
+.gline{stroke:rgba(255,255,255,0.06);stroke-width:1;}
+
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;}
+.legend i{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);}
+.legend i::before{content:"";width:9px;height:9px;border-radius:3px;background:var(--c,#fff);}
+
+/* vitals */
+.vital .top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.vital .val{font-size:30px;font-weight:800;letter-spacing:-0.03em;line-height:1;margin:8px 0 2px;}
+.vital .val small{font-size:14px;color:var(--muted);font-weight:600;}
+.rangebar{margin:12px 0 6px;}
+.zones{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
+.zones .z{display:flex;align-items:center;gap:10px;}
+.zones .z .zn{width:96px;font-size:11.5px;color:var(--muted);flex:0 0 auto;}
+.zones .z .zb{flex:1;height:11px;border-radius:6px;background:var(--track);overflow:hidden;}
+.zones .z .zb i{display:block;height:100%;border-radius:6px;}
+.zones .z .zv{width:48px;text-align:right;font-size:12px;font-weight:700;}
+
+.bodymap{display:grid;grid-template-columns:1fr 1.1fr;gap:14px;align-items:center;}
+@media(max-width:560px){.bodymap{grid-template-columns:1fr;}}
+.seg{display:flex;flex-direction:column;gap:10px;}
+.seg .s{display:flex;align-items:center;gap:10px;}
+.seg .s .nm{width:78px;font-size:12px;color:var(--muted);flex:0 0 auto;}
+.seg .s .bar{flex:1;height:10px;border-radius:6px;background:var(--track);overflow:hidden;}
+.seg .s .bar i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--activity),var(--recovery));}
+.seg .s .vv{font-size:12px;font-weight:700;width:42px;text-align:right;}
+
+.sources{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:6px;}
+@media(max-width:560px){.sources{grid-template-columns:repeat(2,1fr);}}
+.src{display:flex;align-items:center;gap:10px;padding:12px;border-radius:16px;background:rgba(255,255,255,0.04);border:1px solid var(--stroke);}
+.src .ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:800;font-size:14px;flex:0 0 auto;color:#06070A;}
+.src .tt{font-size:12.5px;font-weight:600;line-height:1.2;}
+.src .st{font-size:10.5px;color:var(--recovery);margin-top:3px;display:flex;align-items:center;gap:4px;}
+.src .st::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--recovery);box-shadow:0 0 6px var(--recovery);}
+
+/* targets form */
+.tform{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+@media(max-width:560px){.tform{grid-template-columns:1fr;}}
+.field{display:flex;flex-direction:column;gap:6px;}
+.field label{font-size:12px;color:var(--muted);font-weight:600;}
+.field .ipt{display:flex;align-items:center;background:rgba(255,255,255,0.05);border:1px solid var(--stroke);border-radius:14px;padding:0 14px;transition:.2s;}
+.field .ipt:focus-within{border-color:var(--activity);background:rgba(31,184,255,0.06);}
+.field input{flex:1;background:transparent;border:none;outline:none;color:var(--txt);font-size:20px;font-weight:700;padding:13px 0;width:100%;
+  font-family:inherit;letter-spacing:-0.02em;}
+.field input::-webkit-outer-spin-button,.field input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.field .u{font-size:13px;color:var(--muted);font-weight:600;margin-left:6px;}
+.field .hint{font-size:11px;color:var(--faint);}
+.saved{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--recovery);opacity:0;transition:.3s;}
+.saved.show{opacity:1;}
+
+/* checklist */
+.checks{display:flex;flex-direction:column;gap:9px;margin-top:6px;}
+.checkitem{display:flex;align-items:flex-start;gap:11px;padding:12px;border-radius:14px;background:rgba(255,255,255,0.035);border:1px solid var(--stroke);cursor:pointer;transition:.2s;}
+.checkitem .bx{width:22px;height:22px;border-radius:7px;border:2px solid var(--faint);flex:0 0 auto;display:grid;place-items:center;transition:.2s;margin-top:1px;}
+.checkitem .bx svg{width:13px;height:13px;opacity:0;}
+.checkitem.done .bx{background:var(--recovery);border-color:var(--recovery);}
+.checkitem.done .bx svg{opacity:1;}
+.checkitem.done .cl{color:var(--faint);text-decoration:line-through;}
+.checkitem .cl{font-size:13.5px;font-weight:600;}
+.checkitem .cs{font-size:12px;color:var(--muted);margin-top:2px;}
+
+.insight{display:flex;gap:11px;padding:13px;border-radius:15px;background:rgba(255,255,255,0.035);border:1px solid var(--stroke);margin-top:10px;}
+.insight .ico{width:30px;height:30px;border-radius:9px;flex:0 0 auto;display:grid;place-items:center;}
+.insight .h{font-size:13.5px;font-weight:700;}
+.insight .b{font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:3px;}
+
+.bigcount{display:flex;align-items:baseline;gap:8px;}
+.bigcount .c{font-size:34px;font-weight:800;letter-spacing:-0.03em;}
+
+.nav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--sab) + 14px);z-index:50;
+  display:flex;gap:2px;padding:7px;border-radius:999px;background:rgba(14,14,22,0.74);
+  border:1px solid var(--stroke);backdrop-filter:blur(22px);box-shadow:0 18px 50px rgba(0,0,0,.55);max-width:calc(100vw - 20px);}
+.nav button{border:none;background:transparent;color:var(--muted);font-size:11px;font-weight:600;
+  display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 13px;border-radius:999px;cursor:pointer;transition:.2s;}
+.nav button svg{width:21px;height:21px;}
+.nav button.active{color:var(--txt);background:rgba(255,255,255,0.09);}
+.nav button.active svg{stroke:var(--recovery);}
+@media(max-width:440px){.nav button{padding:8px 9px;} .nav button span{font-size:9.5px;}}
+
+.caption{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--sab) + 86px);z-index:60;
+  max-width:560px;width:calc(100% - 32px);background:rgba(8,8,14,0.92);border:1px solid var(--stroke);
+  border-radius:18px;padding:14px 16px;backdrop-filter:blur(20px);box-shadow:0 20px 60px rgba(0,0,0,.6);display:none;align-items:center;gap:13px;}
+.caption.show{display:flex;}
+.caption .eq{display:flex;align-items:flex-end;gap:3px;height:26px;flex:0 0 auto;}
+.caption .eq i{width:3.5px;background:linear-gradient(var(--recovery),var(--activity));border-radius:3px;animation:eq .9s ease-in-out infinite;}
+.caption .eq i:nth-child(2){animation-delay:.15s}.caption .eq i:nth-child(3){animation-delay:.3s}
+.caption .eq i:nth-child(4){animation-delay:.45s}.caption .eq i:nth-child(5){animation-delay:.6s}
+@keyframes eq{0%,100%{height:7px}50%{height:24px}}
+.caption .txt{font-size:13.5px;line-height:1.4;flex:1;}
+.caption .x{color:var(--muted);font-size:20px;cursor:pointer;background:none;border:none;padding:0 4px;}
+.caption .prog{position:absolute;left:16px;right:16px;bottom:7px;height:2px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;}
+.caption .prog i{display:block;height:100%;background:var(--recovery);width:0;transition:width .3s;}
+.muted-link{color:var(--activity);font-weight:600;cursor:pointer;}
+.footer-note{text-align:center;color:var(--faint);font-size:11px;margin:34px 0 0;line-height:1.6;}
+
+/* calendar */
+.calweek{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:8px;}
+.calweek .wd{text-align:center;font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--faint);text-transform:uppercase;}
+.calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+.cal{aspect-ratio:1;border-radius:13px;border:1px solid var(--stroke);background:rgba(255,255,255,0.03);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;position:relative;transition:.18s;}
+.cal .dn{font-size:13px;font-weight:700;color:var(--muted);line-height:1;}
+.cal.empty{opacity:.28;}
+.cal.future{opacity:.4;border-style:dashed;}
+.cal.has{cursor:pointer;background:rgba(255,255,255,0.05);}
+.cal.has:hover{background:rgba(255,255,255,0.10);transform:translateY(-1px);}
+.cal.has .dn{color:var(--txt);}
+.cal.sel{border-color:transparent;box-shadow:0 0 0 1.6px var(--recovery),0 0 22px rgba(22,236,154,.28);transform:translateY(-1px);}
+.cal.today .dn::after{content:"";display:block;width:4px;height:4px;border-radius:50%;background:var(--activity);margin:3px auto 0;box-shadow:0 0 6px var(--activity);}
+.cal .dot{width:9px;height:9px;border-radius:50%;}
+.cal .dots{display:flex;gap:3px;}
+.cal .dots i{width:5px;height:5px;border-radius:50%;}
+.dot.g,.dots i.g{background:var(--recovery);box-shadow:0 0 6px rgba(22,236,154,.6);}
+.dot.a,.dots i.a{background:var(--body);box-shadow:0 0 6px rgba(255,176,32,.5);}
+.dot.r,.dots i.r{background:var(--coral);box-shadow:0 0 6px rgba(255,84,112,.5);}
+.callegend{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;}
+.callegend i{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);}
+.callegend i::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--cc);}
+.daylist{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+.dayrow{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:13px;background:rgba(255,255,255,0.035);border:1px solid var(--stroke);}
+.dayrow .nm{flex:1;font-size:13px;font-weight:600;}
+.dayrow .nm small{display:block;font-size:11px;color:var(--muted);font-weight:500;margin-top:2px;}
+.dayrow .dv{font-size:17px;font-weight:700;width:78px;text-align:right;letter-spacing:-0.02em;}
+.dayrow .dd{font-size:12px;font-weight:700;width:84px;text-align:right;}
+.dd.up{color:var(--recovery);}.dd.down{color:var(--coral);}.dd.flat{color:var(--faint);}
+.daystatus{display:flex;align-items:center;gap:12px;}
+.daystatus .ring{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:15px;font-weight:800;flex:0 0 auto;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#04110B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3l2 6 4-14 3 10 2-2h4"/></svg>
+      </div>
+      <div><h1>Pulse IQ</h1><div class="sub">Daily Performance OS</div></div>
+    </div>
+    <div class="actions">
+      <button class="iconbtn" id="targetBtn" title="Targets" onclick="go('targets')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/></svg>
+      </button>
+      <button class="coachbtn" id="coachBtn" onclick="Coach.toggle()"><span class="dot"></span><span id="coachLbl">Play Insights</span></button>
+    </div>
+  </div>
+
+  <div class="greet">
+    <h2>Good morning, <span class="accent">Terry</span></h2>
+    <p id="greetSub">Tuesday, 16 June 2026 · Day 9 of your tracking block. Recovery is trending up and your vitals are firmly in range.</p>
+  </div>
+
+  <!-- ===================== TODAY ===================== -->
+  <div class="view active" id="view-today">
+    <div class="grid cols-hero" id="ringRow"></div>
+
+    <div class="section-title"><h3>Today's headline</h3><span>auto-generated</span></div>
+    <div class="grid cols-2">
+      <div class="card" data-walk="readiness">
+        <div class="row-between"><span class="label">Readiness score</span><span class="pill good" id="readyPill">Primed</span></div>
+        <div class="big-num" id="readyNum">86<small style="font-size:18px;color:var(--muted)">/100</small></div>
+        <div id="readySpark"></div>
+        <div class="note" id="readyNote"></div>
+      </div>
+      <div class="card" data-walk="sources">
+        <span class="label">Connected sources</span>
+        <div class="sources">
+          <div class="src"><div class="ic" style="background:linear-gradient(135deg,#FF5470,#FF8A5B)">♥</div><div><div class="tt">Apple Health</div><div class="st">Synced 2m ago</div></div></div>
+          <div class="src"><div class="ic" style="background:linear-gradient(135deg,#8B7DFF,#1FB8FF)">B</div><div><div class="tt">Bevel</div><div class="st">Synced 14m ago</div></div></div>
+          <div class="src"><div class="ic" style="background:linear-gradient(135deg,#16EC9A,#1FB8FF)">In</div><div><div class="tt">InBody</div><div class="st">Synced today</div></div></div>
+          <div class="src"><div class="ic" style="background:linear-gradient(135deg,#FFB020,#FF5470)">iS</div><div><div class="tt">INSMART Scale</div><div class="st">Synced 06:42</div></div></div>
+        </div>
+        <div class="note">All feeds unify through <b>Apple Health (HealthKit)</b>. If INSMART weight isn't appearing, set your current weight under <span class="muted-link" onclick="go('targets')">Targets</span>.</div>
+      </div>
+    </div>
+
+    <div class="section-title"><h3>Coach insights</h3><span>week commencing 8 Jun</span></div>
+    <div class="card" data-walk="insights">
+      <div class="insight"><div class="ico" style="background:rgba(22,236,154,.16)">📈</div><div><div class="h">Body fat down 1.4% in 9 days</div><div class="b">INSMART + InBody agree: <b>19.8% → 18.4%</b> while skeletal muscle held at <b>38.2 kg</b> — clean fat loss, not muscle loss.</div></div></div>
+      <div class="insight"><div class="ico" style="background:rgba(31,184,255,.16)">😴</div><div><div class="h">Sleep consistency is driving recovery</div><div class="b">Your 3 highest recovery days all followed nights with <b>85%+ efficiency</b> and lights-out before 22:45.</div></div></div>
+      <div class="insight"><div class="ico" style="background:rgba(255,176,32,.16)">🫀</div><div><div class="h">Cardio load running hot</div><div class="b">Today's cardio load (<b>172</b>) is above your optimal band — keep tomorrow aerobic to absorb it.</div></div></div>
+    </div>
+  </div>
+
+  <!-- ===================== VITALS ===================== -->
+  <div class="view" id="view-vitals">
+    <div class="section-title"><h3>Vitals</h3><span>Apple Health · live</span></div>
+    <div class="grid cols-3" id="vitalGrid"></div>
+
+    <div class="section-title"><h3>Strain &amp; energy</h3><span>today · 16 Jun</span></div>
+    <div class="grid cols-2">
+      <div class="card" data-walk="strain">
+        <div class="row-between"><span class="label">Day strain</span><span class="pill" id="strainPill"></span></div>
+        <div class="big-num" id="strainVal"></div>
+        <div class="statrow">
+          <div class="chip"><div class="v" id="strainDur"></div><div class="k">Elevated duration</div></div>
+          <div class="chip"><div class="v" id="strainKcal"></div><div class="k">Active energy</div></div>
+        </div>
+        <div id="strainTrend" style="margin-top:14px"></div>
+        <div class="note" id="strainNote"></div>
+      </div>
+      <div class="card" data-walk="energy">
+        <span class="label">Total energy today</span>
+        <div class="bigcount"><div class="c" id="enrgTotal"></div><span class="u" style="color:var(--muted);font-weight:600">kcal</span></div>
+        <div class="statrow">
+          <div class="chip"><div class="v" id="enrgActive"></div><div class="k">Active</div></div>
+          <div class="chip"><div class="v" id="enrgRest"></div><div class="k">Resting (BMR)</div></div>
+        </div>
+        <div id="enrgTrend" style="margin-top:14px"></div>
+        <div class="note">Total energy = active burn + resting metabolic rate. Your 9-day total-energy trend is <b>up 6%</b>, tracking your rising activity.</div>
+      </div>
+    </div>
+
+    <div class="section-title"><h3>Heart-rate zones</h3><span>today's training</span></div>
+    <div class="card" data-walk="zones">
+      <div class="zones" id="hrZones"></div>
+      <div class="note" id="zoneNote"></div>
+    </div>
+  </div>
+
+  <!-- ===================== BODY ===================== -->
+  <div class="view" id="view-body">
+    <div class="section-title"><h3>Body composition</h3><span>InBody + INSMART</span></div>
+    <div class="grid cols-3">
+      <div class="card" data-walk="weight">
+        <span class="label">Current weight</span>
+        <div class="big-num" id="wNow"></div>
+        <div class="delta down" id="wDelta"></div>
+        <div id="weightChart"></div>
+        <div class="note" id="wTargetNote"></div>
+      </div>
+      <div class="card" data-walk="bodyfat">
+        <span class="label">Body fat %</span>
+        <div class="big-num" id="bfNow"></div>
+        <div class="delta up" id="bfDelta"></div>
+        <div id="bfChart"></div>
+        <div class="note" id="bfTargetNote"></div>
+      </div>
+      <div class="card" data-walk="muscle">
+        <span class="label">Skeletal muscle</span>
+        <div class="big-num" id="smNow"></div>
+        <div class="delta up" id="smDelta"></div>
+        <div id="smChart"></div>
+        <div class="note">Holding muscle while fat drops — the signature of a well-managed cut.</div>
+      </div>
+    </div>
+
+    <div class="section-title"><h3>Composition breakdown</h3><span>latest InBody scan · 16 Jun</span></div>
+    <div class="grid cols-2">
+      <div class="card" data-walk="composition">
+        <span class="label">Mass distribution</span>
+        <div id="compBar" style="margin-top:14px"></div>
+        <div class="legend"><i style="--c:var(--activity)">Skeletal muscle</i><i style="--c:var(--recovery)">Body water</i><i style="--c:var(--body)">Fat mass</i><i style="--c:#5A5C6B">Other</i></div>
+        <div class="statrow">
+          <div class="chip"><div class="v">9.6 <small>cm²</small></div><div class="k">Visceral fat area</div></div>
+          <div class="chip"><div class="v">24.1</div><div class="k">BMI</div></div>
+          <div class="chip"><div class="v">3.2 <small>kg</small></div><div class="k">Bone mineral</div></div>
+        </div>
+      </div>
+      <div class="card" data-walk="segmental">
+        <span class="label">Segmental lean analysis</span>
+        <div class="bodymap" style="margin-top:12px">
+          <div style="display:grid;place-items:center"><svg viewBox="0 0 120 220" width="120" height="200" id="bodySvg"></svg></div>
+          <div class="seg" id="segList"></div>
+        </div>
+        <div class="note">All limbs and trunk are above the <b>100% balanced</b> reference — no left/right asymmetry detected.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SLEEP ===================== -->
+  <div class="view" id="view-sleep">
+    <div class="section-title"><h3>Last night</h3><span>Bevel + Apple Health</span></div>
+    <div class="grid cols-2">
+      <div class="card" data-walk="sleepstages">
+        <div class="row-between"><span class="label">Sleep stages</span><span class="pill good">7h 41m asleep</span></div>
+        <div id="sleepStages" style="margin-top:14px"></div>
+        <div class="statrow">
+          <div class="chip"><div class="v">8h 05m</div><div class="k">Time in bed</div></div>
+          <div class="chip"><div class="v">7h 41m</div><div class="k">Time asleep</div></div>
+          <div class="chip"><div class="v">91<small>%</small></div><div class="k">Efficiency</div></div>
+          <div class="chip"><div class="v">2</div><div class="k">Wakeups</div></div>
+        </div>
+        <div class="insight"><div class="ico" style="background:rgba(22,236,154,.16)">✅</div><div><div class="h">Efficiency is excellent (91%)</div><div class="b">You spent only 24 minutes awake in bed. Anything above 85% is strong — your sleep onset and continuity are dialled in.</div></div></div>
+      </div>
+      <div class="card" data-walk="windprep">
+        <div class="row-between"><span class="label">Tonight's wind-down plan</span><span class="pill good" id="bedPill">Bed by 22:30</span></div>
+        <div class="note" id="bedNote" style="margin-top:8px"></div>
+        <div class="checks" id="sleepChecks"></div>
+      </div>
+    </div>
+
+    <div class="section-title"><h3>HRV &amp; recovery</h3><span>9-day window</span></div>
+    <div class="grid cols-2">
+      <div class="card" data-walk="hrv">
+        <span class="label">HRV &amp; resting HR trend</span>
+        <div id="hrvChart" style="margin-top:8px"></div>
+        <div class="legend"><i style="--c:var(--recovery)">HRV (ms)</i><i style="--c:var(--coral)">Resting HR (bpm)</i></div>
+        <div class="note">HRV up <b>+20ms</b>, resting HR down <b>-7bpm</b> — both classic markers of improving autonomic recovery.</div>
+      </div>
+      <div class="card" data-walk="balance">
+        <span class="label">Recovery vs strain</span>
+        <div id="balanceChart" style="margin-top:8px"></div>
+        <div class="legend"><i style="--c:var(--recovery)">Recovery %</i><i style="--c:var(--activity)">Day strain</i></div>
+        <div class="note">Strain stayed under your recovery ceiling on 7 of 9 days — a sustainable build.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== TRENDS ===================== -->
+  <div class="view" id="view-trends">
+    <div class="section-title"><h3>9-day trends</h3><span>8 → 16 June 2026</span></div>
+    <div class="grid cols-2">
+      <div class="card" data-walk="activity">
+        <span class="label">Daily steps</span>
+        <div class="row-between" style="margin-top:6px"><div class="big-num" style="font-size:30px" id="stepsAvg"></div><span class="pill good" id="stepsPill">on target</span></div>
+        <div class="note" style="margin-top:2px">avg steps / day · target <span id="stepsTgtLbl"></span></div>
+        <div id="stepsChart" style="margin-top:10px"></div>
+      </div>
+      <div class="card" data-walk="kcalTrend">
+        <span class="label">Total energy</span>
+        <div class="row-between" style="margin-top:6px"><div class="big-num" style="font-size:30px" id="kcalAvg"></div><span class="pill good">+6%</span></div>
+        <div class="note" style="margin-top:2px">avg total kcal / day</div>
+        <div id="kcalChart" style="margin-top:10px"></div>
+      </div>
+    </div>
+    <div class="section-title"><h3>June 2026 · daily log</h3><span>tap a day for detail</span></div>
+    <div class="card" data-walk="calendar">
+      <div class="calweek" id="calWeekHead"></div>
+      <div class="calgrid" id="calGrid"></div>
+      <div class="callegend">
+        <i style="--cc:var(--recovery)">On track</i>
+        <i style="--cc:var(--body)">Mixed</i>
+        <i style="--cc:var(--coral)">Needs attention</i>
+        <i style="--cc:var(--activity)">Today</i>
+      </div>
+    </div>
+    <div class="card" id="dayDetail" data-walk="daydetail" style="margin-top:14px"></div>
+
+    <div class="section-title"><h3>Progress scorecard</h3><span>vs day-1 baseline &amp; target</span></div>
+    <div class="grid cols-3" id="scoreCards"></div>
+    <div class="footer-note">
+      Prototype · sample data modeled from your tracking block (wc 8 Jun 2026).<br/>
+      In the native build these feeds populate live from Apple Health, Bevel, InBody &amp; INSMART.
+    </div>
+  </div>
+
+  <!-- ===================== TARGETS ===================== -->
+  <div class="view" id="view-targets">
+    <div class="section-title"><h3>Your targets</h3><span id="savedMsg"><span class="saved" id="saved">✓ Saved</span></span></div>
+    <div class="card">
+      <div class="note" style="margin-top:0">Set your goals and current readings below. These update your charts and insights instantly, and are saved on this device. Use <b>Current weight</b> if your INSMART scale isn't syncing into Apple Health yet.</div>
+      <div class="tform" id="tform" style="margin-top:16px"></div>
+    </div>
+    <div class="section-title"><h3>Progress to goal</h3><span>live</span></div>
+    <div class="grid cols-3" id="targetProgress"></div>
+  </div>
+
+</div>
+
+<div class="caption" id="caption">
+  <div class="eq"><i style="height:10px"></i><i style="height:20px"></i><i style="height:14px"></i><i style="height:22px"></i><i style="height:8px"></i></div>
+  <div class="txt" id="captionTxt">…</div>
+  <button class="x" onclick="Coach.stop()">×</button>
+  <div class="prog"><i id="captionProg"></i></div>
+</div>
+
+<nav class="nav" id="nav"></nav>
+
+<script>
+/* =========================== DATA (wc 8 Jun → 16 Jun 2026) =========================== */
+const DATES=['Mon 8','Tue 9','Wed 10','Thu 11','Fri 12','Sat 13','Sun 14','Mon 15','Tue 16'];
+const RESTING_KCAL=1620; // BMR estimate for total-energy calc
+const DATA={
+  recovery:[62,71,68,54,60,77,83,79,86],
+  strain:  [11,14,12,17,15, 9, 8,13,12],
+  sleepEff:[82,88,85,74,80,90,93,89,91],
+  sleepHrs:[6.8,7.4,7.1,6.2,6.9,7.8,8.1,7.5,7.7],
+  hrv:     [48,55,52,41,46,61,66,63,68],
+  rhr:     [56,54,55,59,57,52,50,51,49],
+  stress:  [42,35,38,52,46,30,26,31,28],
+  respRate:[14.8,14.2,14.5,15.6,15.0,13.8,13.5,14.0,14.2],
+  spo2:    [96,97,97,95,96,98,98,97,97],
+  cardio:  [120,165,140,180,150,95,80,150,172],
+  steps:   [8420,11240,9870,7650,10120,13980,9210,11760,12340],
+  kcal:    [540,720,610,470,650,910,580,760,805],
+  weight:  [84.6,84.3,84.1,84.2,83.8,83.5,83.4,83.1,82.9],
+  bodyfat: [19.8,19.6,19.5,19.4,19.1,18.9,18.8,18.6,18.4],
+  muscle:  [38.0,38.0,38.1,38.0,38.1,38.2,38.2,38.2,38.2],
+  bodyWater:[57.1,57.3,57.2,56.4,56.6,57.8,58.0,58.1,58.3]
+};
+DATA.totalEnergy=DATA.kcal.map(k=>k+RESTING_KCAL);
+const last=a=>a[a.length-1], first=a=>a[0], avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
+
+/* =========================== TARGETS (editable, persisted) =========================== */
+const T_DEFAULTS={currentWeight:'',targetWeight:80.0,targetBodyFat:15.0,targetSteps:10000,targetSleep:8.0,targetBedtime:'22:30',targetRHR:48,targetHRV:70};
+let T=loadTargets();
+function loadTargets(){try{return Object.assign({},T_DEFAULTS,JSON.parse(localStorage.getItem('pulseiq_targets')||'{}'));}catch(e){return Object.assign({},T_DEFAULTS);}}
+function saveTargets(){localStorage.setItem('pulseiq_targets',JSON.stringify(T));}
+const TARGET_FIELDS=[
+  {k:'currentWeight',label:'Current weight (manual)',u:'kg',step:'0.1',hint:'Use if INSMART isn\'t syncing to Apple Health'},
+  {k:'targetWeight',label:'Target weight',u:'kg',step:'0.1'},
+  {k:'targetBodyFat',label:'Target body fat',u:'%',step:'0.1'},
+  {k:'targetSteps',label:'Target daily steps',u:'steps',step:'500'},
+  {k:'targetSleep',label:'Target sleep',u:'hrs',step:'0.25'},
+  {k:'targetBedtime',label:'Target bedtime',u:'',type:'time'},
+  {k:'targetRHR',label:'Target resting HR',u:'bpm',step:'1'},
+  {k:'targetHRV',label:'Target HRV',u:'ms',step:'1'},
+];
+function renderTargets(){
+  const f=document.getElementById('tform');f.innerHTML='';
+  TARGET_FIELDS.forEach(fd=>{
+    const wrap=document.createElement('div');wrap.className='field';
+    const val=T[fd.k]!=null?T[fd.k]:'';
+    wrap.innerHTML=`<label>${fd.label}</label>
+      <div class="ipt"><input type="${fd.type||'number'}" ${fd.step?`step="${fd.step}"`:''} inputmode="decimal" value="${val}" placeholder="—" data-k="${fd.k}">${fd.u?`<span class="u">${fd.u}</span>`:''}</div>
+      ${fd.hint?`<div class="hint">${fd.hint}</div>`:''}`;
+    f.appendChild(wrap);
+    const inp=wrap.querySelector('input');
+    inp.addEventListener('input',()=>{
+      let v=inp.value;
+      if(fd.type!=='time'){v=v===''?'':parseFloat(v);}
+      T[fd.k]=v;saveTargets();flashSaved();
+      renderBody();renderTrends();renderSleep();renderVitals();renderTargetProgress();
+    });
+  });
+  renderTargetProgress();
+}
+let savedTmr;
+function flashSaved(){const s=document.getElementById('saved');s.classList.add('show');clearTimeout(savedTmr);savedTmr=setTimeout(()=>s.classList.remove('show'),1400);}
+function curWeight(){return (T.currentWeight!==''&&T.currentWeight!=null)?+T.currentWeight:last(DATA.weight);}
+function renderTargetProgress(){
+  const host=document.getElementById('targetProgress');if(!host)return;host.innerHTML='';
+  const items=[
+    {k:'Weight',cur:curWeight(),tgt:+T.targetWeight,u:' kg',lower:true},
+    {k:'Body fat',cur:last(DATA.bodyfat),tgt:+T.targetBodyFat,u:'%',lower:true},
+    {k:'Resting HR',cur:last(DATA.rhr),tgt:+T.targetRHR,u:' bpm',lower:true},
+    {k:'HRV',cur:last(DATA.hrv),tgt:+T.targetHRV,u:' ms',lower:false},
+    {k:'Sleep',cur:last(DATA.sleepHrs),tgt:+T.targetSleep,u:' hrs',lower:false},
+    {k:'Steps',cur:Math.round(avg(DATA.steps)),tgt:+T.targetSteps,u:'',lower:false},
+  ];
+  items.forEach(it=>{
+    const gap=it.cur-it.tgt;
+    const hit=it.lower?it.cur<=it.tgt:it.cur>=it.tgt;
+    const dist=Math.abs(gap);
+    const card=document.createElement('div');card.className='card';
+    const distStr=(it.k==='Steps')?Math.round(dist).toLocaleString():dist.toFixed(1);
+    card.innerHTML=`<span class="label">${it.k}</span>
+      <div class="big-num" style="font-size:24px">${it.k==='Steps'?Math.round(it.cur).toLocaleString():it.cur}${it.u}</div>
+      <div class="delta ${hit?'up':'down'}">${hit?'🎯 target met':`${distStr}${it.u} to go`}</div>
+      <div class="note" style="margin-top:8px">Target <b>${it.k==='Steps'?(+it.tgt).toLocaleString():it.tgt}${it.u}</b></div>`;
+    host.appendChild(card);
+  });
+}
+
+/* =========================== SVG HELPERS =========================== */
+const NS='http://www.w3.org/2000/svg';
+function el(t,a={}){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e;}
+function svgRoot(w,h){return el('svg',{viewBox:`0 0 ${w} ${h}`,width:'100%',height:h,preserveAspectRatio:'xMidYMid meet'});}
+function lineChart(host,series,opts={}){
+  host.innerHTML='';
+  const W=opts.w||300,H=opts.h||120,pad=opts.pad||{l:6,r:6,t:14,b:18};
+  const s=svgRoot(W,H);const all=series.flatMap(x=>x.data);
+  let min=opts.min!=null?opts.min:Math.min(...all),max=opts.max!=null?opts.max:Math.max(...all);
+  if(opts.target!=null){min=Math.min(min,opts.target);max=Math.max(max,opts.target);}
+  if(min===max){min-=1;max+=1;}
+  min-=(max-min)*0.12;max+=(max-min)*0.10;
+  const n=series[0].data.length;
+  const X=i=>pad.l+(i/(n-1))*(W-pad.l-pad.r), Y=v=>pad.t+(1-(v-min)/(max-min))*(H-pad.t-pad.b);
+  for(let g=0;g<=2;g++){const y=pad.t+g/2*(H-pad.t-pad.b);s.appendChild(el('line',{x1:pad.l,y1:y,x2:W-pad.r,y2:y,class:'gline'}));}
+  if(opts.target!=null){const ty=Y(opts.target);
+    s.appendChild(el('line',{x1:pad.l,y1:ty,x2:W-pad.r,y2:ty,stroke:'var(--body)','stroke-width':1.4,'stroke-dasharray':'4 4',opacity:.9}));
+    const tl=el('text',{x:W-pad.r,y:ty-5,'text-anchor':'end',class:'axis',fill:'var(--body)'});tl.textContent='target '+opts.target;s.appendChild(tl);}
+  series.forEach(ser=>{const col=ser.color;let d='';ser.data.forEach((v,i)=>{d+=(i?' L':'M')+X(i)+' '+Y(v);});
+    if(ser.fill){const gid='g'+Math.random().toString(36).slice(2,7);const defs=el('defs');const lg=el('linearGradient',{id:gid,x1:0,y1:0,x2:0,y2:1});
+      lg.appendChild(el('stop',{offset:'0%','stop-color':col,'stop-opacity':.30}));lg.appendChild(el('stop',{offset:'100%','stop-color':col,'stop-opacity':0}));
+      defs.appendChild(lg);s.appendChild(defs);s.appendChild(el('path',{d:d+` L${X(n-1)} ${H-pad.b} L${X(0)} ${H-pad.b} Z`,fill:`url(#${gid})`}));}
+    s.appendChild(el('path',{d,fill:'none',stroke:col,'stroke-width':ser.w||2.4,'stroke-linejoin':'round','stroke-linecap':'round'}));
+    const li=n-1;s.appendChild(el('circle',{cx:X(li),cy:Y(ser.data[li]),r:3.6,fill:col}));s.appendChild(el('circle',{cx:X(li),cy:Y(ser.data[li]),r:7,fill:col,opacity:.18}));});
+  if(opts.labels){[0,Math.floor(n/2),n-1].forEach(i=>{const t=el('text',{x:X(i),y:H-4,'text-anchor':i===0?'start':i===n-1?'end':'middle',class:'axis'});t.textContent=DATES[i];s.appendChild(t);});}
+  host.appendChild(s);
+}
+function barChart(host,data,opts={}){
+  host.innerHTML='';const W=opts.w||300,H=opts.h||120,pad={l:6,r:6,t:10,b:18};const s=svgRoot(W,H);
+  const max=Math.max(...data)*1.12,n=data.length,gap=4,bw=(W-pad.l-pad.r)/n-gap;
+  const colorAt=opts.colorAt||((i)=>i===n-1?(opts.hot||'#16EC9A'):(opts.color||'#1FB8FF'));
+  data.forEach((v,i)=>{const x=pad.l+i*((W-pad.l-pad.r)/n)+gap/2;const h=(v/max)*(H-pad.t-pad.b);const y=H-pad.b-h;
+    const c=colorAt(i);const gid='b'+i+Math.random().toString(36).slice(2,6);const defs=el('defs');const lg=el('linearGradient',{id:gid,x1:0,y1:0,x2:0,y2:1});
+    lg.appendChild(el('stop',{offset:'0%','stop-color':c}));lg.appendChild(el('stop',{offset:'100%','stop-color':c,'stop-opacity':.35}));
+    defs.appendChild(lg);s.appendChild(defs);s.appendChild(el('rect',{x,y,width:bw,height:h,rx:4,fill:`url(#${gid})`}));});
+  [0,Math.floor(n/2),n-1].forEach(i=>{const x=pad.l+i*((W-pad.l-pad.r)/n)+(W-pad.l-pad.r)/n/2;const t=el('text',{x,y:H-4,'text-anchor':'middle',class:'axis'});t.textContent=DATES[i];s.appendChild(t);});
+  host.appendChild(s);
+}
+function ring(host,{value,max=100,color,size=120}){
+  host.querySelectorAll('svg').forEach(n=>n.remove());
+  const r=(size/2)-9,c=2*Math.PI*r,cx=size/2;const s=svgRoot(size,size);s.setAttribute('height',size);s.setAttribute('width',size);s.setAttribute('viewBox',`0 0 ${size} ${size}`);
+  const gid='rg'+Math.random().toString(36).slice(2,7);const defs=el('defs');const lg=el('linearGradient',{id:gid,x1:0,y1:0,x2:1,y2:1});
+  lg.appendChild(el('stop',{offset:'0%','stop-color':color}));lg.appendChild(el('stop',{offset:'100%','stop-color':shade(color,30)}));defs.appendChild(lg);s.appendChild(defs);
+  s.appendChild(el('circle',{cx,cy:cx,r,fill:'none',stroke:'var(--track)','stroke-width':9}));
+  const p=el('circle',{cx,cy:cx,r,fill:'none',stroke:`url(#${gid})`,'stroke-width':9,'stroke-linecap':'round','stroke-dasharray':c,'stroke-dashoffset':c,transform:`rotate(-90 ${cx} ${cx})`});
+  p.style.transition='stroke-dashoffset 1.1s cubic-bezier(.4,0,.2,1)';s.appendChild(p);host.appendChild(s);
+  requestAnimationFrame(()=>{p.setAttribute('stroke-dashoffset',c*(1-Math.min(value/max,1)));});
+}
+function shade(hex,amt){const n=parseInt(hex.slice(1),16);let r=(n>>16)+amt,g=((n>>8)&255)+amt,b=(n&255)+amt;r=Math.min(255,Math.max(0,r));g=Math.min(255,Math.max(0,g));b=Math.min(255,Math.max(0,b));return '#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');}
+function rangeBar(host,{value,lo,hi,min,max}){
+  host.innerHTML='';const W=300,H=34,pad=8;const s=svgRoot(W,H);s.setAttribute('height',H);
+  const X=v=>pad+((v-min)/(max-min))*(W-2*pad);
+  s.appendChild(el('rect',{x:pad,y:14,width:W-2*pad,height:6,rx:3,fill:'var(--track)'}));
+  s.appendChild(el('rect',{x:X(lo),y:14,width:Math.max(2,X(hi)-X(lo)),height:6,rx:3,fill:'rgba(22,236,154,0.5)'}));
+  const cx=Math.max(pad,Math.min(W-pad,X(value)));
+  const col=value<lo?'#1FB8FF':value>hi?'#FFB020':'#16EC9A';
+  s.appendChild(el('circle',{cx,cy:17,r:8,fill:col}));s.appendChild(el('circle',{cx,cy:17,r:13,fill:col,opacity:.2}));
+  const t1=el('text',{x:pad,y:H-1,class:'axis','text-anchor':'start'});t1.textContent=min;s.appendChild(t1);
+  const t2=el('text',{x:W-pad,y:H-1,class:'axis','text-anchor':'end'});t2.textContent=max;s.appendChild(t2);
+  host.appendChild(s);
+}
+
+/* =========================== RINGS =========================== */
+function ringDefs(){return[
+  {name:'Recovery',color:'#16EC9A',value:last(DATA.recovery),unit:'%',big:last(DATA.recovery),delta:`+${last(DATA.recovery)-DATA.recovery[7]} vs yesterday`,up:true},
+  {name:'Activity',color:'#1FB8FF',value:last(DATA.strain),max:21,unit:'strain',big:last(DATA.strain).toFixed(1),delta:'moderate day',up:true},
+  {name:'Sleep',color:'#8B7DFF',value:last(DATA.sleepEff),unit:'eff.',big:last(DATA.sleepEff),delta:`${last(DATA.sleepHrs)}h logged`,up:true},
+  {name:'Body',color:'#FFB020',value:100-last(DATA.bodyfat),unit:'lean',big:(100-last(DATA.bodyfat)).toFixed(1),delta:`${last(DATA.bodyfat)}% fat`,up:true},
+];}
+function renderRings(){
+  const row=document.getElementById('ringRow');row.innerHTML='';
+  ringDefs().forEach(rg=>{const card=document.createElement('div');card.className='card ring-card';card.setAttribute('data-walk','ring-'+rg.name.toLowerCase());
+    card.innerHTML=`<div class="ring-wrap"><div class="ctr"><div class="big" style="color:${rg.color}">${rg.big}</div><div class="unit">${rg.unit}</div></div></div><div class="name">${rg.name}</div><div class="delta ${rg.up?'up':'down'}">${rg.delta}</div>`;
+    row.appendChild(card);ring(card.querySelector('.ring-wrap'),{value:rg.value,max:rg.max||100,color:rg.color,size:120});});
+}
+function renderToday(){
+  lineChart(document.getElementById('readySpark'),[{data:DATA.recovery,color:'#16EC9A',fill:true}],{h:70,labels:false});
+  document.getElementById('readyNote').innerHTML=`Readiness blends <b>HRV</b>, <b>resting HR</b>, sleep &amp; prior strain. Up <b>+24 points</b> from your week-low on the 11th — green light for a higher-intensity session.`;
+}
+
+/* =========================== VITALS =========================== */
+function classify(v,lo,hi){return v<lo?'below':v>hi?'above':'normal';}
+function vitalList(){return[
+  {name:'Recovery',val:last(DATA.recovery),unit:'%',lo:67,hi:100,min:0,max:100,src:'Bevel · 06:55',trend:DATA.recovery,
+    insight:'Strongest reading of the block. Your autonomic system is well-recovered — capacity for a hard session today.'},
+  {name:'Stress',val:last(DATA.stress),unit:'/100',lo:0,hi:45,min:0,max:100,src:'Apple Health · live',trend:DATA.stress,
+    insight:'Low and falling. Mid-week spike on the 11th lined up with your poorest sleep — worth protecting your evenings.'},
+  {name:'Respiratory rate',val:last(DATA.respRate),unit:'br/min',lo:12,hi:20,min:8,max:24,src:'Apple Health · sleep',trend:DATA.respRate,
+    insight:'Stable in the normal band. A sudden rise often pre-empts illness or under-recovery — none flagged.'},
+  {name:'Resting HR',val:last(DATA.rhr),unit:'bpm',lo:40,hi:60,min:35,max:80,src:'Apple Health · live',trend:DATA.rhr,
+    insight:'Down 7bpm across the block — your aerobic base is improving. Now '+ (last(DATA.rhr)<=T.targetRHR?'at':'above')+' your target of '+T.targetRHR+'bpm.'},
+  {name:'HRV',val:last(DATA.hrv),unit:'ms',lo:45,hi:90,min:20,max:100,src:'Bevel · overnight',trend:DATA.hrv,
+    insight:'Trending up strongly (+20ms). HRV is your clearest recovery signal — this confirms the green readiness.'},
+  {name:'SpO₂',val:last(DATA.spo2),unit:'%',lo:95,hi:100,min:90,max:100,src:'Apple Health · sleep',trend:DATA.spo2,
+    insight:'Healthy overnight oxygen saturation with no desaturation events detected.'},
+  {name:'Cardio load',val:last(DATA.cardio),unit:'',lo:80,hi:160,min:0,max:250,src:'Apple Health · live',trend:DATA.cardio,
+    insight:'Above your optimal band today. One hard day is fine — keep tomorrow easy/aerobic so you absorb the load.'},
+];}
+const STATE_PILL={normal:{c:'good',t:'Normal'},above:{c:'warn',t:'Above normal'},below:{c:'low',t:'Below normal'}};
+function renderVitals(){
+  const grid=document.getElementById('vitalGrid');grid.innerHTML='';
+  vitalList().forEach(v=>{const st=classify(v.val,v.lo,v.hi);const p=STATE_PILL[st];
+    const card=document.createElement('div');card.className='card vital';card.setAttribute('data-walk','vital-'+v.name.toLowerCase());
+    card.innerHTML=`<div class="top"><span class="label">${v.name}</span><span class="pill ${p.c}">${p.t}</span></div>
+      <div class="val">${v.val}<small> ${v.unit}</small></div>
+      <span class="srctag">${v.src}</span>
+      <div class="rangebar"></div>
+      <div class="spark"></div>
+      <div class="note">${v.insight}</div>`;
+    grid.appendChild(card);
+    rangeBar(card.querySelector('.rangebar'),{value:v.val,lo:v.lo,hi:v.hi,min:v.min,max:v.max});
+    lineChart(card.querySelector('.spark'),[{data:v.trend,color:st==='normal'?'#16EC9A':st==='above'?'#FFB020':'#1FB8FF',fill:true}],{h:54,labels:false});
+  });
+
+  // Strain detail
+  const sVal=last(DATA.strain);const sLo=8,sHi=15;const sState=classify(sVal,sLo,sHi);const sp=STATE_PILL[sState];
+  document.getElementById('strainVal').innerHTML=`${sVal.toFixed(1)}<small style="font-size:16px;color:var(--muted)"> / 21</small>`;
+  const spill=document.getElementById('strainPill');spill.className='pill '+sp.c;spill.textContent=sp.t;
+  document.getElementById('strainDur').textContent='1h 04m';
+  document.getElementById('strainKcal').innerHTML=`${last(DATA.kcal)}<small> kcal</small>`;
+  barChart(document.getElementById('strainTrend'),DATA.strain,{h:104,colorAt:i=>{const c=classify(DATA.strain[i],sLo,sHi);return c==='normal'?'#16EC9A':c==='above'?'#FFB020':'#1FB8FF';}});
+  document.getElementById('strainNote').innerHTML=`Today's strain of <b>${sVal.toFixed(1)}</b> sits in your <b>optimal range (8–15)</b>. Bars in <span style="color:var(--body)">amber</span> were over-reaching days, <span style="color:var(--activity)">blue</span> were under-loaded recovery days.`;
+
+  // Energy
+  document.getElementById('enrgTotal').textContent=last(DATA.totalEnergy).toLocaleString();
+  document.getElementById('enrgActive').innerHTML=`${last(DATA.kcal)}<small> kcal</small>`;
+  document.getElementById('enrgRest').innerHTML=`${RESTING_KCAL.toLocaleString()}<small> kcal</small>`;
+  lineChart(document.getElementById('enrgTrend'),[{data:DATA.totalEnergy,color:'#FFB020',fill:true}],{h:104,labels:true});
+
+  // HR zones
+  const zones=[
+    {n:'Z1 Very light',m:26,c:'#1FB8FF',r:'104–124 bpm'},
+    {n:'Z2 Light',m:21,c:'#16EC9A',r:'124–143 bpm'},
+    {n:'Z3 Moderate',m:13,c:'#C9E84B',r:'143–162 bpm'},
+    {n:'Z4 Hard',m:7,c:'#FFB020',r:'162–171 bpm'},
+    {n:'Z5 Max',m:2,c:'#FF5470',r:'171+ bpm'},
+  ];
+  const maxM=Math.max(...zones.map(z=>z.m)),totM=zones.reduce((a,b)=>a+b.m,0);
+  const zh=document.getElementById('hrZones');zh.innerHTML='';
+  zones.forEach(z=>{const d=document.createElement('div');d.className='z';
+    d.innerHTML=`<div class="zn">${z.n}</div><div class="zb"><i style="width:${z.m/maxM*100}%;background:${z.c}"></i></div><div class="zv">${z.m}m</div>`;zh.appendChild(d);});
+  document.getElementById('zoneNote').innerHTML=`<b>${totM} min</b> elevated today, the bulk in <b>Z1–Z2</b> (aerobic base). Only <b>9 min</b> in Z4–Z5 — efficient, low-cost training that builds fitness without spiking fatigue.`;
+}
+
+/* =========================== BODY =========================== */
+function renderBody(){
+  const cur=curWeight();const wArr=DATA.weight.slice();wArr[wArr.length-1]=cur;
+  document.getElementById('wNow').innerHTML=`${cur}<small style="font-size:18px;color:var(--muted)"> kg</small>`;
+  const wd=cur-first(wArr);const wde=document.getElementById('wDelta');wde.textContent=`${wd>0?'+':''}${wd.toFixed(1)} kg since day 1`;wde.className='delta '+(wd<=0?'up':'down');
+  lineChart(document.getElementById('weightChart'),[{data:wArr,color:'#1FB8FF',fill:true}],{h:96,labels:true,target:+T.targetWeight});
+  const toGo=(cur-T.targetWeight);
+  document.getElementById('wTargetNote').innerHTML=toGo>0?`<b>${toGo.toFixed(1)} kg</b> to your target of <b>${T.targetWeight} kg</b>. <span class="muted-link" onclick="go('targets')">Edit target</span>`:`🎯 At or below your <b>${T.targetWeight} kg</b> target. <span class="muted-link" onclick="go('targets')">Edit</span>`;
+
+  document.getElementById('bfNow').innerHTML=`${last(DATA.bodyfat)}<small style="font-size:18px;color:var(--muted)"> %</small>`;
+  const bfd=last(DATA.bodyfat)-first(DATA.bodyfat);document.getElementById('bfDelta').textContent=`${bfd.toFixed(1)}% since day 1`;
+  lineChart(document.getElementById('bfChart'),[{data:DATA.bodyfat,color:'#FFB020',fill:true}],{h:96,labels:true,target:+T.targetBodyFat});
+  document.getElementById('bfTargetNote').innerHTML=`<b>${(last(DATA.bodyfat)-T.targetBodyFat).toFixed(1)}%</b> above your <b>${T.targetBodyFat}%</b> goal.`;
+
+  document.getElementById('smNow').innerHTML=`${last(DATA.muscle)}<small style="font-size:18px;color:var(--muted)"> kg</small>`;
+  document.getElementById('smDelta').textContent=`+${(last(DATA.muscle)-first(DATA.muscle)).toFixed(1)} kg since day 1`;
+  lineChart(document.getElementById('smChart'),[{data:DATA.muscle,color:'#16EC9A',fill:true}],{h:96,labels:true,min:37.5,max:38.6});
+
+  const comp=[{k:'Skeletal muscle',v:38.2,c:'#1FB8FF'},{k:'Body water',v:9.3,c:'#16EC9A'},{k:'Fat mass',v:15.3,c:'#FFB020'},{k:'Other',v:20.1,c:'#5A5C6B'}];
+  const total=comp.reduce((a,b)=>a+b.v,0);const host=document.getElementById('compBar');host.innerHTML='';
+  const s=svgRoot(300,46);s.setAttribute('height',46);let x=0;
+  comp.forEach(c=>{const w=c.v/total*300;s.appendChild(el('rect',{x:x+1,y:0,width:Math.max(0,w-2),height:24,rx:6,fill:c.c}));const t=el('text',{x:x+w/2,y:42,'text-anchor':'middle',class:'axis'});t.textContent=c.v+'kg';x+=w;});
+  host.appendChild(s);
+
+  const segs=[{nm:'Right arm',v:104},{nm:'Left arm',v:103},{nm:'Trunk',v:101},{nm:'Right leg',v:107},{nm:'Left leg',v:106}];
+  const sl=document.getElementById('segList');sl.innerHTML='';
+  segs.forEach(g=>{const d=document.createElement('div');d.className='s';d.innerHTML=`<div class="nm">${g.nm}</div><div class="bar"><i style="width:${Math.min(100,(g.v-80)/40*100)}%"></i></div><div class="vv">${g.v}%</div>`;sl.appendChild(d);});
+  const bs=document.getElementById('bodySvg');bs.innerHTML='';
+  [['M60 18 m-13 0 a13 13 0 1 0 26 0 a13 13 0 1 0 -26 0'],['M44 36 h32 v44 q0 6 -6 6 h-20 q-6 0 -6 -6 z'],['M44 40 l-16 8 v34 l8 2 v-30 l8 -6 z'],['M76 40 l16 8 v34 l-8 2 v-30 l-8 -6 z'],['M48 88 v60 l-3 22 h10 l4 -52 z'],['M72 88 v60 l3 22 h-10 l-4 -52 z']].forEach(p=>{bs.appendChild(el('path',{d:p[0],fill:'rgba(31,184,255,0.18)',stroke:'#1FB8FF','stroke-width':1.2}));});
+}
+
+/* =========================== SLEEP =========================== */
+function renderSleep(){
+  const stages=[{k:'Awake',v:0.6,c:'#FF5470'},{k:'REM',v:1.87,c:'#8B7DFF'},{k:'Light',v:3.9,c:'#1FB8FF'},{k:'Deep',v:1.47,c:'#16EC9A'}];
+  const tot=stages.reduce((a,b)=>a+b.v,0);const host=document.getElementById('sleepStages');host.innerHTML='';
+  const s=svgRoot(300,22);s.setAttribute('height',22);let x=0;stages.forEach(g=>{const w=g.v/tot*300;s.appendChild(el('rect',{x:x+1,y:0,width:Math.max(0,w-2),height:22,rx:6,fill:g.c}));x+=w;});host.appendChild(s);
+  const lg=document.createElement('div');lg.className='legend';lg.innerHTML=stages.map(g=>`<i style="--c:${g.c}">${g.k} ${g.v.toFixed(1)}h</i>`).join('');host.appendChild(lg);
+
+  document.getElementById('bedPill').textContent='Bed by '+T.targetBedtime;
+  document.getElementById('bedNote').innerHTML=`To hit your <b>${T.targetSleep}h</b> goal with a 7:00 wake-up, lights-out is <b>${T.targetBedtime}</b>. Start winding down ~45 min before. <span class="muted-link" onclick="go('targets')">Adjust target</span>`;
+  const checks=[
+    {t:'Dim lights & screens',s:'From 21:45 — drop blue light to raise melatonin'},
+    {t:'No caffeine after 14:00',s:'Caffeine has a ~6h half-life; protects deep sleep'},
+    {t:'Last meal 2–3h before bed',s:'Lets core temperature drop for sleep onset'},
+    {t:'Cool, dark room (~18°C)',s:'Your best-recovery nights were your coolest'},
+    {t:'5-min breathing / box-breath',s:'Lifts overnight HRV — your strongest recovery lever'},
+  ];
+  const cl=document.getElementById('sleepChecks');cl.innerHTML='';
+  checks.forEach(c=>{const d=document.createElement('div');d.className='checkitem';
+    d.innerHTML=`<div class="bx"><svg viewBox="0 0 24 24" fill="none" stroke="#04110B" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-11"/></svg></div><div><div class="cl">${c.t}</div><div class="cs">${c.s}</div></div>`;
+    d.onclick=()=>d.classList.toggle('done');cl.appendChild(d);});
+
+  lineChart(document.getElementById('hrvChart'),[{data:DATA.hrv,color:'#16EC9A',fill:true},{data:DATA.rhr,color:'#FF5470',w:2}],{h:130,labels:true,min:40,max:75});
+
+  const host2=document.getElementById('balanceChart');host2.innerHTML='';
+  const W=600,H=150,pad={l:8,r:8,t:12,b:20};const s2=svgRoot(W,H);s2.setAttribute('height',H);const n=DATA.strain.length,maxS=21;
+  DATA.strain.forEach((v,i)=>{const bw=(W-pad.l-pad.r)/n-6;const x=pad.l+i*((W-pad.l-pad.r)/n)+3;const h=v/maxS*(H-pad.t-pad.b);s2.appendChild(el('rect',{x,y:H-pad.b-h,width:bw,height:h,rx:4,fill:'rgba(31,184,255,0.55)'}));});
+  let d='';DATA.recovery.forEach((v,i)=>{const x=pad.l+(i/(n-1))*(W-pad.l-pad.r);const y=pad.t+(1-v/100)*(H-pad.t-pad.b);d+=(i?' L':'M')+x+' '+y;});
+  s2.appendChild(el('path',{d,fill:'none',stroke:'#16EC9A','stroke-width':2.6,'stroke-linejoin':'round'}));
+  [0,4,8].forEach(i=>{const x=pad.l+(i/(n-1))*(W-pad.l-pad.r);const t=el('text',{x,y:H-5,'text-anchor':i===0?'start':i===8?'end':'middle',class:'axis'});t.textContent=DATES[i];s2.appendChild(t);});
+  host2.appendChild(s2);
+}
+
+/* =========================== TRENDS =========================== */
+function renderTrends(){
+  const stepsTarget=+T.targetSteps;
+  document.getElementById('stepsAvg').textContent=Math.round(avg(DATA.steps)).toLocaleString();
+  document.getElementById('stepsTgtLbl').textContent=stepsTarget.toLocaleString();
+  const sp=document.getElementById('stepsPill');const hit=avg(DATA.steps)>=stepsTarget;sp.className='pill '+(hit?'good':'warn');sp.textContent=hit?'on target':'below target';
+  barChart(document.getElementById('stepsChart'),DATA.steps,{h:120,colorAt:i=>DATA.steps[i]>=stepsTarget?'#16EC9A':'#1FB8FF'});
+  document.getElementById('kcalAvg').textContent=Math.round(avg(DATA.totalEnergy)).toLocaleString();
+  barChart(document.getElementById('kcalChart'),DATA.totalEnergy,{h:120,color:'#FFB020',hot:'#FF5470'});
+
+  const cards=[
+    {k:'Recovery',a:first(DATA.recovery),b:last(DATA.recovery),u:'%',inv:false},
+    {k:'Body fat',a:first(DATA.bodyfat),b:last(DATA.bodyfat),u:'%',inv:true},
+    {k:'Weight',a:first(DATA.weight),b:curWeight(),u:' kg',inv:true},
+    {k:'HRV',a:first(DATA.hrv),b:last(DATA.hrv),u:' ms',inv:false},
+    {k:'Resting HR',a:first(DATA.rhr),b:last(DATA.rhr),u:' bpm',inv:true},
+    {k:'Stress',a:first(DATA.stress),b:last(DATA.stress),u:'/100',inv:true},
+  ];
+  const host=document.getElementById('scoreCards');host.innerHTML='';
+  cards.forEach(c=>{const d=c.b-c.a;const improved=c.inv?d<0:d>0;const card=document.createElement('div');card.className='card';
+    card.innerHTML=`<span class="label">${c.k}</span><div class="big-num" style="font-size:26px">${c.b}${c.u}</div><div class="delta ${improved?'up':'down'}">${d>0?'+':''}${d.toFixed(1)}${c.u} · ${improved?'improved':'watch'}</div>`;host.appendChild(card);});
+
+  renderCalendar();
+}
+
+/* =========================== DAILY CALENDAR =========================== */
+// Data covers day-of-month 8..16 (June 2026). idx = dom - 8. Today = 16th.
+const CAL_YEAR=2026, CAL_MONTH=5 /*June*/, DATA_START_DOM=8, TODAY_DOM=16;
+let selectedDom=TODAY_DOM;
+function domToIdx(dom){return dom-DATA_START_DOM;}
+function hasData(dom){const i=domToIdx(dom);return i>=0 && i<DATES.length;}
+
+// Per-metric thresholds → 'g' (good) / 'a' (amber) / 'r' (red). dir:'high'=higher better.
+const STATUS_METRICS=[
+  {k:'Recovery', key:'recovery', u:'%',    dir:'high', g:75, a:60},
+  {k:'Sleep eff.',key:'sleepEff',u:'%',    dir:'high', g:85, a:78},
+  {k:'HRV',      key:'hrv',      u:' ms',  dir:'high', g:60, a:48},
+  {k:'Resting HR',key:'rhr',     u:' bpm', dir:'low',  g:52, a:56},
+  {k:'Stress',   key:'stress',   u:'/100', dir:'low',  g:35, a:48},
+  {k:'Body fat', key:'bodyfat',  u:'%',    dir:'low',  g:19.0, a:19.6},
+  {k:'Steps',    key:'steps',    u:'',     dir:'high', g:10000, a:8000},
+  {k:'Active kcal',key:'kcal',   u:' kcal',dir:'high', g:650, a:500},
+];
+function metricStatus(m,val){
+  if(m.dir==='high') return val>=m.g?'g':val>=m.a?'a':'r';
+  return val<=m.g?'g':val<=m.a?'a':'r';
+}
+function dayComposite(dom){
+  const i=domToIdx(dom);
+  let score=0,n=0;
+  ['recovery','sleepEff','hrv','rhr','stress','steps'].forEach(key=>{
+    const m=STATUS_METRICS.find(x=>x.key===key);const s=metricStatus(m,DATA[key][i]);
+    score+= s==='g'?2:s==='a'?1:0;n++;
+  });
+  const avgS=score/n;
+  return avgS>=1.5?'g':avgS>=0.85?'a':'r';
+}
+const STATUS_COLOR={g:'#16EC9A',a:'#FFB020',r:'#FF5470'};
+const STATUS_WORD={g:'On track',a:'Mixed',r:'Needs attention'};
+
+function renderCalendar(){
+  // weekday header (Mon-first)
+  const wd=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  document.getElementById('calWeekHead').innerHTML=wd.map(d=>`<div class="wd">${d[0]}</div>`).join('');
+  const grid=document.getElementById('calGrid');grid.innerHTML='';
+  const firstDay=new Date(CAL_YEAR,CAL_MONTH,1);
+  // JS getDay: 0=Sun..6=Sat. Convert to Mon-first offset.
+  let lead=(firstDay.getDay()+6)%7;
+  const daysInMonth=new Date(CAL_YEAR,CAL_MONTH+1,0).getDate();
+  for(let i=0;i<lead;i++){const c=document.createElement('div');c.className='cal empty';grid.appendChild(c);}
+  for(let dom=1;dom<=daysInMonth;dom++){
+    const c=document.createElement('div');
+    if(hasData(dom)){
+      const comp=dayComposite(dom);
+      c.className='cal has'+(dom===TODAY_DOM?' today':'')+(dom===selectedDom?' sel':'');
+      c.innerHTML=`<span class="dn">${dom}</span><span class="dot ${comp}"></span>`;
+      c.onclick=()=>{selectedDom=dom;renderCalendar();renderDayDetail();};
+    }else{
+      const future=dom>TODAY_DOM;
+      c.className='cal '+(future?'future':'empty');
+      c.innerHTML=`<span class="dn">${dom}</span>`;
+    }
+    grid.appendChild(c);
+  }
+  renderDayDetail();
+}
+
+function renderDayDetail(){
+  const host=document.getElementById('dayDetail');
+  const i=domToIdx(selectedDom);
+  const comp=dayComposite(selectedDom);
+  const dateObj=new Date(CAL_YEAR,CAL_MONTH,selectedDom);
+  const dateStr=dateObj.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+  const isToday=selectedDom===TODAY_DOM;
+  // Compare selected day → today (or, if today, vs day-1 baseline).
+  const cmpIdx = isToday ? 0 : domToIdx(TODAY_DOM);
+  const cmpLabel = isToday ? 'vs day 1' : 'by today';
+
+  let rows='';
+  STATUS_METRICS.forEach(m=>{
+    const val=DATA[m.key][i];
+    const cmpVal=DATA[m.key][cmpIdx];
+    const d = isToday ? (val-cmpVal) : (cmpVal-val); // change from selected → today
+    const improved = m.dir==='high' ? d>0 : d<0;
+    const flat = Math.abs(d) < (m.key==='steps'||m.key==='kcal'?5:0.05);
+    const cls = flat?'flat':(improved?'up':'down');
+    const arrow = flat?'→':(d>0?'↑':'↓');
+    const fmtV = (m.key==='steps')?Math.round(val).toLocaleString():val.toFixed(m.key==='respRate'||m.key==='bodyfat'||m.key==='hrv'?1:(Number.isInteger(val)?0:1));
+    const dDisp = (m.key==='steps')?Math.round(Math.abs(d)).toLocaleString():Math.abs(d).toFixed(1);
+    const s=metricStatus(m,val);
+    rows+=`<div class="dayrow">
+      <span class="dot ${s}" style="flex:0 0 auto"></span>
+      <div class="nm">${m.k}<small>${STATUS_WORD[s]}</small></div>
+      <div class="dv">${fmtV}${m.u}</div>
+      <div class="dd ${cls}">${flat?'no change':arrow+dDisp+m.u}</div>
+    </div>`;
+  });
+
+  const summary = isToday
+    ? `Today is tracking <b>${STATUS_WORD[comp].toLowerCase()}</b>. Deltas show movement since day 1 of the block.`
+    : `Selected <b>${dateStr}</b> — a <b>${STATUS_WORD[comp].toLowerCase()}</b> day. The right column shows how each measure changed <b>${cmpLabel}</b> (the 16th).`;
+
+  host.innerHTML=`
+    <div class="row-between">
+      <div class="daystatus">
+        <div class="ring" style="background:${STATUS_COLOR[comp]}22;color:${STATUS_COLOR[comp]};border:2px solid ${STATUS_COLOR[comp]}">${selectedDom}</div>
+        <div><div style="font-size:15px;font-weight:700">${dateStr}</div>
+        <div class="srctag" style="margin-top:4px">${isToday?'Today · live':'Logged day'}</div></div>
+      </div>
+      <span class="pill ${comp==='g'?'good':comp==='a'?'warn':'bad'}">${STATUS_WORD[comp]}</span>
+    </div>
+    <div class="note" style="margin-top:10px">${summary}</div>
+    <div class="row-between" style="margin-top:14px"><span class="label">Measure</span><span class="label">${isToday?'today':'that day'} · change ${cmpLabel}</span></div>
+    <div class="daylist">${rows}</div>`;
+}
+
+/* =========================== NAV =========================== */
+const VIEWS=[
+  {id:'today',label:'Today',icon:'<path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/>'},
+  {id:'vitals',label:'Vitals',icon:'<path d="M3 12h4l2 5 4-12 2 7h6"/>'},
+  {id:'body',label:'Body',icon:'<circle cx="12" cy="6" r="3"/><path d="M6 21v-4a6 6 0 0112 0v4"/>'},
+  {id:'sleep',label:'Sleep',icon:'<path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/>'},
+  {id:'trends',label:'Trends',icon:'<path d="M3 17l6-6 4 4 7-7"/><path d="M14 7h6v6"/>'},
+];
+const ALL_VIEWS=VIEWS.concat([{id:'targets'}]);
+function buildNav(){const nav=document.getElementById('nav');nav.innerHTML='';
+  VIEWS.forEach(v=>{const b=document.createElement('button');b.id='nav-'+v.id;b.onclick=()=>go(v.id);
+    b.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${v.icon}</svg><span>${v.label}</span>`;nav.appendChild(b);});}
+function go(id){
+  ALL_VIEWS.forEach(v=>{const el2=document.getElementById('view-'+v.id);if(el2)el2.classList.toggle('active',v.id===id);
+    const nb=document.getElementById('nav-'+v.id);if(nb)nb.classList.toggle('active',v.id===id);});
+  document.getElementById('targetBtn').classList.toggle('on',id==='targets');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* =========================== VOICE-OVER COACH =========================== */
+const Coach={
+  steps:[
+    {view:'today',sel:'[data-walk="ring-recovery"]',text:"Good morning Terry. Welcome to Pulse IQ. Your recovery is 86 percent — your highest of the block and up 7 points from yesterday. Your body is primed."},
+    {view:'today',sel:'[data-walk="insights"]',text:"Three headlines today: body fat down one point four percent in nine days with muscle held steady, sleep consistency driving your recovery, and cardio load running a little hot."},
+    {view:'vitals',sel:'[data-walk="vital-hrv"]',text:"Your vitals, live from Apple Health. Heart-rate variability is up to 68 milliseconds, firmly in your normal band — your clearest sign of strong recovery."},
+    {view:'vitals',sel:'[data-walk="vital-cardio load"]',text:"One to watch: cardio load is above normal at 172, flagged in amber. One hard day is fine — keep tomorrow aerobic so you absorb it."},
+    {view:'vitals',sel:'[data-walk="strain"]',text:"Today's strain of 12 sits in your optimal range. The trend bars show amber days where you over-reached and blue days where you under-loaded."},
+    {view:'vitals',sel:'[data-walk="zones"]',text:"Your heart-rate zones show 69 minutes elevated, mostly in zones one and two. That's efficient aerobic work that builds fitness without spiking fatigue."},
+    {view:'body',sel:'[data-walk="weight"]',text:"On body: I've separated your current weight from your target. The dashed amber line is your goal — tap Targets any time to update it, especially if your INSMART scale isn't syncing."},
+    {view:'body',sel:'[data-walk="muscle"]',text:"Crucially, skeletal muscle held flat at 38.2 kilograms while fat fell. You're losing fat without losing muscle — exactly the goal."},
+    {view:'sleep',sel:'[data-walk="sleepstages"]',text:"Last night: 8 hours 5 in bed, 7 hours 41 asleep — a 91 percent efficiency, which is excellent. Only 24 minutes awake."},
+    {view:'sleep',sel:'[data-walk="windprep"]',text:"For tonight, your wind-down plan targets a 10:30 bedtime. Dim screens, no late caffeine, cool room, and five minutes of breathing to lift your overnight HRV."},
+    {view:'trends',sel:'[data-walk="activity"]',text:"And your trends: over ten thousand steps a day and total energy up six percent. Momentum is on your side, Terry. Keep stacking these days."},
+  ],
+  i:0,active:false,
+  toggle(){this.active?this.stop():this.start();},
+  start(){if(!('speechSynthesis' in window)){alert('Voice-over needs a browser with speech support.');return;}
+    this.active=true;this.i=0;document.getElementById('coachBtn').classList.add('live');document.getElementById('coachLbl').textContent='Stop';document.getElementById('caption').classList.add('show');this.run();},
+  run(){if(!this.active||this.i>=this.steps.length){this.stop();return;}
+    const st=this.steps[this.i];go(st.view);
+    document.querySelectorAll('.card.glow').forEach(c=>c.classList.remove('glow'));
+    document.getElementById('captionTxt').textContent=st.text;document.getElementById('captionProg').style.width=((this.i+1)/this.steps.length*100)+'%';
+    setTimeout(()=>{const target=document.querySelector(st.sel);if(target){target.classList.add('glow');target.scrollIntoView({behavior:'smooth',block:'center'});}
+      const stepIdx=this.i;const advance=()=>{if(this.active&&this.i===stepIdx){this.i++;setTimeout(()=>this.run(),550);}};
+      const u=new SpeechSynthesisUtterance(st.text);u.rate=1.0;u.pitch=1.0;
+      const vs=speechSynthesis.getVoices();const pref=vs.find(v=>/Samantha|Daniel|Karen|Serena|Google UK|Google US/.test(v.name));if(pref)u.voice=pref;
+      u.onend=advance;u.onerror=advance;speechSynthesis.cancel();speechSynthesis.speak(u);
+      clearTimeout(this._fb);this._fb=setTimeout(advance,Math.max(4200,st.text.length*62));},420);},
+  stop(){this.active=false;clearTimeout(this._fb);speechSynthesis.cancel();document.getElementById('coachBtn').classList.remove('live');document.getElementById('coachLbl').textContent='Play Insights';document.getElementById('caption').classList.remove('show');document.querySelectorAll('.card.glow').forEach(c=>c.classList.remove('glow'));}
+};
+if('speechSynthesis' in window){speechSynthesis.onvoiceschanged=()=>{};speechSynthesis.getVoices();}
+
+/* PWA: register service worker for install + offline */
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
+
+/* INIT */
+renderRings();renderToday();renderVitals();renderBody();renderSleep();renderTrends();renderTargets();buildNav();go('today');
+</script>
+</body>
+</html>

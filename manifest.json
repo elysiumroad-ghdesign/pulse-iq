@@ -1,0 +1,16 @@
+{
+  "name": "Pulse IQ",
+  "short_name": "Pulse IQ",
+  "id": "/",
+  "description": "Daily performance insights from Apple Health, Bevel, InBody & INSMART",
+  "start_url": "index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#07070B",
+  "theme_color": "#07070B",
+  "icons": [
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-1024.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
