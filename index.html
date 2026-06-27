@@ -254,7 +254,7 @@ svg{display:block;}
 
   <div class="greet">
     <h2>Good morning, <span class="accent">Terry</span></h2>
-    <p id="greetSub">Tuesday, 16 June 2026 · Day 9 of your tracking block. Recovery is trending up and your vitals are firmly in range.</p>
+    <p id="greetSub">Sunday, 28 June 2026 · Day 21 of your tracking block. Your INSMART scan is in — strong muscle, protein and water; weight and visceral fat are the focus.</p>
   </div>
 
   <!-- ===================== TODAY ===================== -->
@@ -283,9 +283,9 @@ svg{display:block;}
 
     <div class="section-title"><h3>Coach insights</h3><span>week commencing 8 Jun</span></div>
     <div class="card" data-walk="insights">
-      <div class="insight"><div class="ico" style="background:rgba(22,236,154,.16)">📈</div><div><div class="h">Body fat down 1.4% in 9 days</div><div class="b">INSMART + InBody agree: <b>19.8% → 18.4%</b> while skeletal muscle held at <b>38.2 kg</b> — clean fat loss, not muscle loss.</div></div></div>
-      <div class="insight"><div class="ico" style="background:rgba(31,184,255,.16)">😴</div><div><div class="h">Sleep consistency is driving recovery</div><div class="b">Your 3 highest recovery days all followed nights with <b>85%+ efficiency</b> and lights-out before 22:45.</div></div></div>
-      <div class="insight"><div class="ico" style="background:rgba(255,176,32,.16)">🫀</div><div><div class="h">Cardio load running hot</div><div class="b">Today's cardio load (<b>172</b>) is above your optimal band — keep tomorrow aerobic to absorb it.</div></div></div>
+      <div class="insight"><div class="ico" style="background:rgba(22,236,154,.16)">💪</div><div><div class="h">Strong, muscular base</div><div class="b">Today's INSMART scan: muscle mass <b>72.95 kg</b> (Optimal), muscle rate <b>78.8%</b> (Excellent) and protein <b>18.9%</b> all healthy. Body type: <b>Standard Muscle</b>.</div></div></div>
+      <div class="insight"><div class="ico" style="background:rgba(255,84,112,.16)">⚖️</div><div><div class="h">Weight &amp; visceral fat are the focus</div><div class="b">Weight <b>92.5 kg</b> and BMI <b>28.9</b> read High, and visceral fat <b>11.0</b> is in the Alert band — even though body fat (<b>17%</b>) is healthy. The lever is trimming visceral/abdominal fat.</div></div></div>
+      <div class="insight"><div class="ico" style="background:rgba(255,176,32,.16)">🔥</div><div><div class="h">Nudge BMR up</div><div class="b">BMR <b>2028 kcal</b> is just below standard (~2063) and body age reads <b>50</b>. Resistance work + protein lifts metabolism and shifts fat without costing muscle.</div></div></div>
     </div>
   </div>
 
@@ -327,8 +327,8 @@ svg{display:block;}
 
   <!-- ===================== BODY ===================== -->
   <div class="view" id="view-body">
-    <div class="section-title"><h3>Body composition</h3><span>InBody + INSMART</span></div>
-    <div class="grid cols-3">
+    <div class="section-title"><h3>Body composition</h3><span>INSMART scan · 28 Jun</span></div>
+    <div class="grid cols-2">
       <div class="card" data-walk="weight">
         <span class="label">Current weight</span>
         <div class="big-num" id="wNow"></div>
@@ -344,33 +344,47 @@ svg{display:block;}
         <div class="note" id="bfTargetNote"></div>
       </div>
       <div class="card" data-walk="muscle">
-        <span class="label">Skeletal muscle</span>
+        <span class="label">Muscle mass</span>
         <div class="big-num" id="smNow"></div>
         <div class="delta up" id="smDelta"></div>
         <div id="smChart"></div>
-        <div class="note">Holding muscle while fat drops — the signature of a well-managed cut.</div>
+        <div class="note">Muscle mass is in the <b>Optimal</b> band — your strong base is what's holding weight up.</div>
+      </div>
+      <div class="card" data-walk="bmi">
+        <span class="label">BMI</span>
+        <div class="big-num" id="bmiNow"></div>
+        <div class="delta down" id="bmiDelta"></div>
+        <div id="bmiChart"></div>
+        <div class="note" id="bmiNote"></div>
       </div>
     </div>
+    <div class="footer-note" style="margin:14px 0 0;text-align:left">Trend lines are illustrative; <b>today's scan (28 Jun)</b> is your real INSMART reading. Real history fills in as you log more scans.</div>
 
-    <div class="section-title"><h3>Composition breakdown</h3><span>latest InBody scan · 16 Jun</span></div>
+    <div class="section-title"><h3>Full body scan</h3><span>INSMART · 28 Jun · 08:42</span></div>
+    <div class="grid cols-3" id="scanGrid"></div>
+
+    <div class="section-title"><h3>Composition &amp; metabolism</h3><span>this scan</span></div>
     <div class="grid cols-2">
       <div class="card" data-walk="composition">
         <span class="label">Mass distribution</span>
         <div id="compBar" style="margin-top:14px"></div>
-        <div class="legend"><i style="--c:var(--activity)">Skeletal muscle</i><i style="--c:var(--recovery)">Body water</i><i style="--c:var(--body)">Fat mass</i><i style="--c:#5A5C6B">Other</i></div>
+        <div class="legend"><i style="--c:var(--activity)">Muscle mass</i><i style="--c:var(--recovery)">Bone</i><i style="--c:var(--body)">Fat mass</i></div>
         <div class="statrow">
-          <div class="chip"><div class="v">9.6 <small>cm²</small></div><div class="k">Visceral fat area</div></div>
-          <div class="chip"><div class="v">24.1</div><div class="k">BMI</div></div>
-          <div class="chip"><div class="v">3.2 <small>kg</small></div><div class="k">Bone mineral</div></div>
+          <div class="chip"><div class="v">11.0</div><div class="k">Visceral fat <small>(alert)</small></div></div>
+          <div class="chip"><div class="v">28.9</div><div class="k">BMI</div></div>
+          <div class="chip"><div class="v">3.83 <small>kg</small></div><div class="k">Bone mass</div></div>
         </div>
       </div>
-      <div class="card" data-walk="segmental">
-        <span class="label">Segmental lean analysis</span>
-        <div class="bodymap" style="margin-top:12px">
-          <div style="display:grid;place-items:center"><svg viewBox="0 0 120 220" width="120" height="200" id="bodySvg"></svg></div>
-          <div class="seg" id="segList"></div>
+      <div class="card" data-walk="metabolism">
+        <span class="label">Metabolism &amp; body type</span>
+        <div class="row-between" style="margin-top:6px"><div class="big-num" style="font-size:30px">2028<small style="font-size:16px;color:var(--muted)"> kcal</small></div><span class="pill warn">BMR low</span></div>
+        <div class="note" style="margin-top:2px">basal metabolic rate · standard ≈ 2063</div>
+        <div class="statrow">
+          <div class="chip"><div class="v">Standard<br>Muscle</div><div class="k">Body type</div></div>
+          <div class="chip"><div class="v">50 <small>yrs</small></div><div class="k">Body age</div></div>
+          <div class="chip"><div class="v">76.78 <small>kg</small></div><div class="k">Lean body mass</div></div>
         </div>
-        <div class="note">All limbs and trunk are above the <b>100% balanced</b> reference — no left/right asymmetry detected.</div>
+        <div class="note">Standard-Muscle build with a lot of lean mass. Nudging BMR up (resistance work + protein) helps shift fat without losing muscle.</div>
       </div>
     </div>
   </div>
@@ -491,10 +505,10 @@ const DATA={
   cardio:  [120,165,140,180,150,95,80,150,172],
   steps:   [8420,11240,9870,7650,10120,13980,9210,11760,12340],
   kcal:    [540,720,610,470,650,910,580,760,805],
-  weight:  [84.6,84.3,84.1,84.2,83.8,83.5,83.4,83.1,82.9],
-  bodyfat: [19.8,19.6,19.5,19.4,19.1,18.9,18.8,18.6,18.4],
-  muscle:  [38.0,38.0,38.1,38.0,38.1,38.2,38.2,38.2,38.2],
-  bodyWater:[57.1,57.3,57.2,56.4,56.6,57.8,58.0,58.1,58.3]
+  weight:  [94.0,93.7,93.6,93.4,93.2,93.0,92.8,92.7,92.5],   // INSMART, ending at today's real scan
+  bodyfat: [18.0,17.9,17.7,17.6,17.5,17.4,17.2,17.1,17.0],
+  muscle:  [72.4,72.5,72.5,72.6,72.7,72.8,72.85,72.9,72.95], // muscle mass kg
+  bodyWater:[58.8,58.9,59.0,59.2,59.3,59.5,59.6,59.8,59.9]
 };
 DATA.totalEnergy=DATA.kcal.map(k=>k+RESTING_KCAL);
 const last=a=>a[a.length-1], first=a=>a[0], avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
@@ -705,34 +719,78 @@ function renderVitals(){
 }
 
 /* =========================== BODY =========================== */
+const BMI_SERIES=[29.5,29.4,29.3,29.2,29.1,29.0,29.0,28.95,28.9];
 function renderBody(){
   const cur=curWeight();const wArr=DATA.weight.slice();wArr[wArr.length-1]=cur;
   document.getElementById('wNow').innerHTML=`${cur}<small style="font-size:18px;color:var(--muted)"> kg</small>`;
-  const wd=cur-first(wArr);const wde=document.getElementById('wDelta');wde.textContent=`${wd>0?'+':''}${wd.toFixed(1)} kg since day 1`;wde.className='delta '+(wd<=0?'up':'down');
-  lineChart(document.getElementById('weightChart'),[{data:wArr,color:'#1FB8FF',fill:true}],{h:96,labels:true,target:+T.targetWeight});
+  const wd=cur-first(wArr);const wde=document.getElementById('wDelta');wde.textContent=`${wd>0?'+':''}${wd.toFixed(1)} kg over block`;wde.className='delta '+(wd<=0?'up':'down');
+  lineChart(document.getElementById('weightChart'),[{data:wArr,color:'#1FB8FF',fill:true}],{h:96,labels:false,target:+T.targetWeight});
   const toGo=(cur-T.targetWeight);
   document.getElementById('wTargetNote').innerHTML=toGo>0?`<b>${toGo.toFixed(1)} kg</b> to your target of <b>${T.targetWeight} kg</b>. <span class="muted-link" onclick="go('targets')">Edit target</span>`:`🎯 At or below your <b>${T.targetWeight} kg</b> target. <span class="muted-link" onclick="go('targets')">Edit</span>`;
 
   document.getElementById('bfNow').innerHTML=`${last(DATA.bodyfat)}<small style="font-size:18px;color:var(--muted)"> %</small>`;
-  const bfd=last(DATA.bodyfat)-first(DATA.bodyfat);document.getElementById('bfDelta').textContent=`${bfd.toFixed(1)}% since day 1`;
-  lineChart(document.getElementById('bfChart'),[{data:DATA.bodyfat,color:'#FFB020',fill:true}],{h:96,labels:true,target:+T.targetBodyFat});
-  document.getElementById('bfTargetNote').innerHTML=`<b>${(last(DATA.bodyfat)-T.targetBodyFat).toFixed(1)}%</b> above your <b>${T.targetBodyFat}%</b> goal.`;
+  const bfd=last(DATA.bodyfat)-first(DATA.bodyfat);document.getElementById('bfDelta').textContent=`${bfd.toFixed(1)}% over block`;
+  lineChart(document.getElementById('bfChart'),[{data:DATA.bodyfat,color:'#FFB020',fill:true}],{h:96,labels:false,target:+T.targetBodyFat});
+  document.getElementById('bfTargetNote').innerHTML=`<b>${(last(DATA.bodyfat)-T.targetBodyFat).toFixed(1)}%</b> from your <b>${T.targetBodyFat}%</b> goal — already in the healthy band.`;
 
   document.getElementById('smNow').innerHTML=`${last(DATA.muscle)}<small style="font-size:18px;color:var(--muted)"> kg</small>`;
-  document.getElementById('smDelta').textContent=`+${(last(DATA.muscle)-first(DATA.muscle)).toFixed(1)} kg since day 1`;
-  lineChart(document.getElementById('smChart'),[{data:DATA.muscle,color:'#16EC9A',fill:true}],{h:96,labels:true,min:37.5,max:38.6});
+  document.getElementById('smDelta').textContent=`+${(last(DATA.muscle)-first(DATA.muscle)).toFixed(2)} kg over block`;
+  lineChart(document.getElementById('smChart'),[{data:DATA.muscle,color:'#16EC9A',fill:true}],{h:96,labels:false});
 
-  const comp=[{k:'Skeletal muscle',v:38.2,c:'#1FB8FF'},{k:'Body water',v:9.3,c:'#16EC9A'},{k:'Fat mass',v:15.3,c:'#FFB020'},{k:'Other',v:20.1,c:'#5A5C6B'}];
+  document.getElementById('bmiNow').innerHTML=`28.9`;
+  const bme=document.getElementById('bmiDelta');bme.textContent=`${(last(BMI_SERIES)-first(BMI_SERIES)).toFixed(1)} over block`;bme.className='delta up';
+  lineChart(document.getElementById('bmiChart'),[{data:BMI_SERIES,color:'#8B7DFF',fill:true}],{h:96,labels:false});
+  document.getElementById('bmiNote').innerHTML=`<b>Overweight</b> band (24–30). Muscle mass inflates BMI — read it alongside your body-fat % (17%, healthy).`;
+
+  // Mass distribution: muscle + bone + fat ≈ weight
+  const comp=[{k:'Muscle',v:72.95,c:'#1FB8FF'},{k:'Bone',v:3.83,c:'#16EC9A'},{k:'Fat',v:+(cur*0.17).toFixed(1),c:'#FFB020'}];
   const total=comp.reduce((a,b)=>a+b.v,0);const host=document.getElementById('compBar');host.innerHTML='';
   const s=svgRoot(300,46);s.setAttribute('height',46);let x=0;
   comp.forEach(c=>{const w=c.v/total*300;s.appendChild(el('rect',{x:x+1,y:0,width:Math.max(0,w-2),height:24,rx:6,fill:c.c}));const t=el('text',{x:x+w/2,y:42,'text-anchor':'middle',class:'axis'});t.textContent=c.v+'kg';x+=w;});
   host.appendChild(s);
 
-  const segs=[{nm:'Right arm',v:104},{nm:'Left arm',v:103},{nm:'Trunk',v:101},{nm:'Right leg',v:107},{nm:'Left leg',v:106}];
-  const sl=document.getElementById('segList');sl.innerHTML='';
-  segs.forEach(g=>{const d=document.createElement('div');d.className='s';d.innerHTML=`<div class="nm">${g.nm}</div><div class="bar"><i style="width:${Math.min(100,(g.v-80)/40*100)}%"></i></div><div class="vv">${g.v}%</div>`;sl.appendChild(d);});
-  const bs=document.getElementById('bodySvg');bs.innerHTML='';
-  [['M60 18 m-13 0 a13 13 0 1 0 26 0 a13 13 0 1 0 -26 0'],['M44 36 h32 v44 q0 6 -6 6 h-20 q-6 0 -6 -6 z'],['M44 40 l-16 8 v34 l8 2 v-30 l8 -6 z'],['M76 40 l16 8 v34 l-8 2 v-30 l-8 -6 z'],['M48 88 v60 l-3 22 h10 l4 -52 z'],['M72 88 v60 l3 22 h-10 l-4 -52 z']].forEach(p=>{bs.appendChild(el('path',{d:p[0],fill:'rgba(31,184,255,0.18)',stroke:'#1FB8FF','stroke-width':1.2}));});
+  renderScan();
+}
+
+/* =========================== FULL BODY SCAN (INSMART, 28 Jun) =========================== */
+const SCAN_COLOR={good:'#16EC9A',warn:'#FFB020',bad:'#FF5470'};
+const SCAN=[
+  {n:'Weight',v:92.5,u:' kg',lo:62.37,hi:76.23,min:55,max:100,s:'bad',w:'High',std:'62–76 kg'},
+  {n:'BMI',v:28.9,u:'',lo:18.5,hi:24,min:15,max:34,s:'warn',w:'Overweight',std:'18.5–24'},
+  {n:'Body fat',v:17.0,u:'%',lo:11,hi:22,min:5,max:32,s:'good',w:'Standard',std:'11–22%'},
+  {n:'Muscle mass',v:72.95,u:' kg',lo:49.4,hi:59.4,min:40,max:80,s:'good',w:'Optimal',std:'49–59 kg'},
+  {n:'Skeletal muscle',v:53.6,u:'%',lo:49,hi:59,min:40,max:68,s:'good',w:'Standard',std:'49–59%'},
+  {n:'Muscle rate',v:78.8,u:'%',lo:53.4,hi:64.2,min:45,max:85,s:'good',w:'Excellent',std:'53–64%'},
+  {n:'Body water',v:59.9,u:'%',lo:55,hi:65,min:45,max:70,s:'good',w:'Standard',std:'55–65%'},
+  {n:'Protein',v:18.9,u:'%',lo:16,hi:20,min:10,max:26,s:'good',w:'Standard',std:'16–20%'},
+  {n:'Bone mass',v:3.83,u:' kg',lo:3.10,hi:3.30,min:2.5,max:4.5,s:'good',w:'Optimal',std:'3.1–3.3 kg'},
+  {n:'Visceral fat',v:11.0,u:'',lo:0,hi:9,min:0,max:20,s:'warn',w:'Alert',std:'under 9'},
+  {n:'Subcutaneous fat',v:13.9,u:'%',lo:8.6,hi:16.7,min:5,max:25,s:'good',w:'Standard',std:'8.6–16.7%'},
+  {n:'Fat level',v:28.9,u:'',lo:18.5,hi:24.9,min:15,max:40,s:'warn',w:'Overweight',std:'18.5–24.9'},
+  {n:'BMR',v:2028,u:' kcal',lo:2063,hi:2600,min:1500,max:2800,s:'warn',w:'Low',std:'2063+ kcal'},
+  {n:'Body age',v:50,u:' yrs',lo:30,hi:47,min:30,max:70,s:'warn',w:'Older',std:'under 47'},
+];
+function scanGauge(host,m){
+  host.innerHTML='';const W=300,H=30,pad=8;const s=svgRoot(W,H);s.setAttribute('height',H);
+  const X=v=>pad+((v-m.min)/(m.max-m.min))*(W-2*pad);
+  s.appendChild(el('rect',{x:pad,y:13,width:W-2*pad,height:6,rx:3,fill:'rgba(255,255,255,0.08)'}));
+  s.appendChild(el('rect',{x:X(m.lo),y:13,width:Math.max(2,X(m.hi)-X(m.lo)),height:6,rx:3,fill:'rgba(22,236,154,0.45)'}));
+  const cx=Math.max(pad,Math.min(W-pad,X(m.v)));const col=SCAN_COLOR[m.s];
+  s.appendChild(el('circle',{cx,cy:16,r:13,fill:col,opacity:.18}));
+  s.appendChild(el('circle',{cx,cy:16,r:7.5,fill:col}));
+  host.appendChild(s);
+}
+function renderScan(){
+  const grid=document.getElementById('scanGrid');if(!grid)return;grid.innerHTML='';
+  SCAN.forEach(m=>{
+    const card=document.createElement('div');card.className='card';
+    card.innerHTML=`<div class="row-between"><span class="label">${m.n}</span><span class="pill ${m.s}">${m.w}</span></div>
+      <div class="big-num" style="font-size:30px">${m.v}<small style="font-size:14px;color:var(--muted)">${m.u}</small></div>
+      <div class="gauge" style="margin:10px 0 4px"></div>
+      <div class="note" style="margin-top:2px">standard ${m.std}</div>`;
+    grid.appendChild(card);
+    scanGauge(card.querySelector('.gauge'),m);
+  });
 }
 
 /* =========================== SLEEP =========================== */
