@@ -314,7 +314,7 @@ svg{display:block;}
           <div class="chip"><div class="v" id="enrgRest"></div><div class="k">Resting (BMR)</div></div>
         </div>
         <div id="enrgTrend" style="margin-top:14px"></div>
-        <div class="note">Total energy = active burn + resting metabolic rate. Your 9-day total-energy trend is <b>up 6%</b>, tracking your rising activity.</div>
+        <div class="note">Total energy = active burn + resting metabolic rate. Your total-energy trend is <b>up 6%</b> across the block, tracking your rising activity.</div>
       </div>
     </div>
 
@@ -411,7 +411,7 @@ svg{display:block;}
       </div>
     </div>
 
-    <div class="section-title"><h3>HRV &amp; recovery</h3><span>9-day window</span></div>
+    <div class="section-title"><h3>HRV &amp; recovery</h3><span>21-day window</span></div>
     <div class="grid cols-2">
       <div class="card" data-walk="hrv">
         <span class="label">HRV &amp; resting HR trend</span>
@@ -430,7 +430,7 @@ svg{display:block;}
 
   <!-- ===================== TRENDS ===================== -->
   <div class="view" id="view-trends">
-    <div class="section-title"><h3>9-day trends</h3><span>8 → 16 June 2026</span></div>
+    <div class="section-title"><h3>21-day trends</h3><span>8 → 28 June 2026</span></div>
     <div class="grid cols-2">
       <div class="card" data-walk="activity">
         <span class="label">Daily steps</span>
@@ -490,25 +490,27 @@ svg{display:block;}
 
 <script>
 /* =========================== DATA (wc 8 Jun → 16 Jun 2026) =========================== */
-const DATES=['Mon 8','Tue 9','Wed 10','Thu 11','Fri 12','Sat 13','Sun 14','Mon 15','Tue 16'];
+// 21-day block: Mon 8 Jun → Sun 28 Jun 2026 (today). Activity 17–28 illustrative
+// pending real uploads; body metrics end at the real INSMART scan on the 28th.
+const DATES=['Mon 8','Tue 9','Wed 10','Thu 11','Fri 12','Sat 13','Sun 14','Mon 15','Tue 16','Wed 17','Thu 18','Fri 19','Sat 20','Sun 21','Mon 22','Tue 23','Wed 24','Thu 25','Fri 26','Sat 27','Sun 28'];
 const RESTING_KCAL=1620; // BMR estimate for total-energy calc
 const DATA={
-  recovery:[62,71,68,54,60,77,83,79,86],
-  strain:  [11,14,12,17,15, 9, 8,13,12],
-  sleepEff:[82,88,85,74,80,90,93,89,91],
-  sleepHrs:[6.8,7.4,7.1,6.2,6.9,7.8,8.1,7.5,7.7],
-  hrv:     [48,55,52,41,46,61,66,63,68],
-  rhr:     [56,54,55,59,57,52,50,51,49],
-  stress:  [42,35,38,52,46,30,26,31,28],
-  respRate:[14.8,14.2,14.5,15.6,15.0,13.8,13.5,14.0,14.2],
-  spo2:    [96,97,97,95,96,98,98,97,97],
-  cardio:  [120,165,140,180,150,95,80,150,172],
-  steps:   [8420,11240,9870,7650,10120,13980,9210,11760,12340],
-  kcal:    [540,720,610,470,650,910,580,760,805],
-  weight:  [94.0,93.7,93.6,93.4,93.2,93.0,92.8,92.7,92.5],   // INSMART, ending at today's real scan
-  bodyfat: [18.0,17.9,17.7,17.6,17.5,17.4,17.2,17.1,17.0],
-  muscle:  [72.4,72.5,72.5,72.6,72.7,72.8,72.85,72.9,72.95], // muscle mass kg
-  bodyWater:[58.8,58.9,59.0,59.2,59.3,59.5,59.6,59.8,59.9]
+  recovery:[62,71,68,54,60,77,83,79,86,80,72,68,84,88,75,70,82,87,79,75,84],
+  strain:  [11,14,12,17,15, 9, 8,13,12,15,16,11, 9,14,17,12,10,15,16,13,12],
+  sleepEff:[82,88,85,74,80,90,93,89,91,88,84,80,90,92,86,83,89,91,87,85,90],
+  sleepHrs:[6.8,7.4,7.1,6.2,6.9,7.8,8.1,7.5,7.7,7.4,7.1,6.8,7.8,8.0,7.3,7.0,7.6,7.7,7.4,7.2,7.8],
+  hrv:     [48,55,52,41,46,61,66,63,68,60,57,53,64,67,58,55,62,66,61,57,66],
+  rhr:     [56,54,55,59,57,52,50,51,49,51,53,55,50,49,52,54,51,50,52,51,49],
+  stress:  [42,35,38,52,46,30,26,31,28,34,38,42,30,27,36,40,33,29,35,33,29],
+  respRate:[14.8,14.2,14.5,15.6,15.0,13.8,13.5,14.0,14.2,14.4,14.6,15.0,13.9,13.7,14.3,14.8,14.1,13.9,14.4,14.2,14.0],
+  spo2:    [96,97,97,95,96,98,98,97,97,97,96,96,98,98,97,96,97,98,97,97,97],
+  cardio:  [120,165,140,180,150,95,80,150,172,160,170,130,100,175,185,140,110,170,180,150,140],
+  steps:   [8420,11240,9870,7650,10120,13980,9210,11760,12340,10500,9200,8800,13200,14100,9600,8400,12800,13500,10200,9100,11800],
+  kcal:    [540,720,610,470,650,910,580,760,805,680,600,560,880,920,610,540,820,870,660,590,780],
+  weight:  [94.6,94.4,94.3,94.1,94.0,93.8,93.7,93.6,93.5,93.4,93.3,93.2,93.1,93.0,92.9,92.8,92.7,92.65,92.6,92.55,92.5],
+  bodyfat: [18.4,18.3,18.2,18.1,18.0,17.9,17.85,17.8,17.7,17.6,17.55,17.5,17.45,17.4,17.3,17.25,17.2,17.15,17.1,17.05,17.0],
+  muscle:  [72.2,72.25,72.3,72.35,72.4,72.45,72.5,72.55,72.6,72.62,72.65,72.7,72.72,72.75,72.78,72.8,72.85,72.88,72.9,72.93,72.95],
+  bodyWater:[58.5,58.6,58.6,58.7,58.8,58.9,59.0,59.1,59.2,59.3,59.3,59.4,59.5,59.5,59.6,59.7,59.7,59.8,59.85,59.88,59.9]
 };
 DATA.totalEnergy=DATA.kcal.map(k=>k+RESTING_KCAL);
 const last=a=>a[a.length-1], first=a=>a[0], avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
@@ -719,7 +721,7 @@ function renderVitals(){
 }
 
 /* =========================== BODY =========================== */
-const BMI_SERIES=[29.5,29.4,29.3,29.2,29.1,29.0,29.0,28.95,28.9];
+const BMI_SERIES=[29.6,29.5,29.4,29.3,29.3,29.2,29.2,29.1,29.1,29.0,29.0,29.0,28.98,28.97,28.96,28.95,28.93,28.92,28.91,28.9,28.9];
 function renderBody(){
   const cur=curWeight();const wArr=DATA.weight.slice();wArr[wArr.length-1]=cur;
   document.getElementById('wNow').innerHTML=`${cur}<small style="font-size:18px;color:var(--muted)"> kg</small>`;
@@ -852,7 +854,7 @@ function renderTrends(){
 
 /* =========================== DAILY CALENDAR =========================== */
 // Data covers day-of-month 8..16 (June 2026). idx = dom - 8. Today = 16th.
-const CAL_YEAR=2026, CAL_MONTH=5 /*June*/, DATA_START_DOM=8, TODAY_DOM=16;
+const CAL_YEAR=2026, CAL_MONTH=5 /*June*/, DATA_START_DOM=8, TODAY_DOM=28;
 let selectedDom=TODAY_DOM;
 function domToIdx(dom){return dom-DATA_START_DOM;}
 function hasData(dom){const i=domToIdx(dom);return i>=0 && i<DATES.length;}
