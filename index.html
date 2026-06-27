@@ -215,6 +215,15 @@ svg{display:block;}
 .cal.has .dn{color:var(--txt);}
 .cal.sel{border-color:transparent;box-shadow:0 0 0 1.6px var(--recovery),0 0 22px rgba(22,236,154,.28);transform:translateY(-1px);}
 .cal.today .dn::after{content:"";display:block;width:4px;height:4px;border-radius:50%;background:var(--activity);margin:3px auto 0;box-shadow:0 0 6px var(--activity);}
+.cal.trained{box-shadow:inset 0 0 0 1.4px rgba(31,184,255,.45);}
+.cal .lift{position:absolute;top:5px;right:6px;font-size:8px;opacity:.85;line-height:1;}
+.tlog{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
+.tlog .t{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:13px;background:rgba(255,255,255,0.035);border:1px solid var(--stroke);}
+.tlog .t .ic{width:30px;height:30px;border-radius:9px;flex:0 0 auto;display:grid;place-items:center;background:rgba(31,184,255,.14);font-size:14px;}
+.tlog .t .nm{flex:1;font-size:13px;font-weight:600;}
+.tlog .t .nm small{display:block;font-size:11px;color:var(--muted);font-weight:500;margin-top:2px;}
+.tlog .t .re{font-size:16px;font-weight:700;text-align:right;}
+.tlog .t .re small{display:block;font-size:10px;color:var(--muted);font-weight:600;}
 .cal .dot{width:9px;height:9px;border-radius:50%;}
 .cal .dots{display:flex;gap:3px;}
 .cal .dots i{width:5px;height:5px;border-radius:50%;}
@@ -255,7 +264,7 @@ svg{display:block;}
 
   <div class="greet">
     <h2>Good morning, <span class="accent">Terry</span></h2>
-    <p id="greetSub">Sunday, 28 June 2026 · Day 21 of your tracking block. Your INSMART scan is in — strong muscle, protein and water; weight and visceral fat are the focus.</p>
+    <p id="greetSub">Sunday, 28 June 2026 · Day 21 · rest day. Your INSMART scan + 15 Strava strength sessions are in — strong muscular base; weight &amp; visceral fat are the focus.</p>
   </div>
 
   <!-- ===================== TODAY ===================== -->
@@ -284,7 +293,7 @@ svg{display:block;}
 
     <div class="section-title"><h3>Coach insights</h3><span>week commencing 8 Jun</span></div>
     <div class="card" data-walk="insights">
-      <div class="insight"><div class="ico" style="background:rgba(22,236,154,.16)">💪</div><div><div class="h">Strong, muscular base</div><div class="b">Today's INSMART scan: muscle mass <b>72.95 kg</b> (Optimal), muscle rate <b>78.8%</b> (Excellent) and protein <b>18.9%</b> all healthy. Body type: <b>Standard Muscle</b>.</div></div></div>
+      <div class="insight"><div class="ico" style="background:rgba(22,236,154,.16)">💪</div><div><div class="h">Consistent, strong, building</div><div class="b">INSMART: muscle mass <b>72.95 kg</b> (Optimal), muscle rate <b>78.8%</b> (Excellent). Strava: <b>15 strength sessions</b> this block — biggest effort on the 20th (RE 237). Your "Build" focus is showing.</div></div></div>
       <div class="insight"><div class="ico" style="background:rgba(255,84,112,.16)">⚖️</div><div><div class="h">Weight &amp; visceral fat are the focus</div><div class="b">Weight <b>92.5 kg</b> and BMI <b>28.9</b> read High, and visceral fat <b>11.0</b> is in the Alert band — even though body fat (<b>17%</b>) is healthy. The lever is trimming visceral/abdominal fat.</div></div></div>
       <div class="insight"><div class="ico" style="background:rgba(255,176,32,.16)">🔥</div><div><div class="h">Nudge BMR up</div><div class="b">BMR <b>2028 kcal</b> is just below standard (~2063) and body age reads <b>50</b>. Resistance work + protein lifts metabolism and shifts fat without costing muscle.</div></div></div>
     </div>
@@ -455,9 +464,17 @@ svg{display:block;}
         <i style="--cc:var(--body)">Mixed</i>
         <i style="--cc:var(--coral)">Needs attention</i>
         <i style="--cc:var(--activity)">Today</i>
+        <i style="--cc:transparent">🏋 Trained (Strava)</i>
       </div>
     </div>
     <div class="card" id="dayDetail" data-walk="daydetail" style="margin-top:14px"></div>
+
+    <div class="section-title"><h3>Training log</h3><span>Strava · live</span></div>
+    <div class="card" data-walk="training">
+      <div class="row-between"><span class="label">Relative effort</span><span class="pill good" id="trainPill"></span></div>
+      <div id="reChart" style="margin-top:10px"></div>
+      <div class="tlog" id="trainLog"></div>
+    </div>
 
     <div class="section-title"><h3>Progress scorecard</h3><span>vs day-1 baseline &amp; target</span></div>
     <div class="grid cols-3" id="scoreCards"></div>
@@ -497,7 +514,10 @@ const DATES=['Mon 8','Tue 9','Wed 10','Thu 11','Fri 12','Sat 13','Sun 14','Mon 1
 const RESTING_KCAL=1620; // BMR estimate for total-energy calc
 const DATA={
   recovery:[62,71,68,54,60,77,83,79,86,80,72,68,84,88,75,70,82,87,79,75,84],
-  strain:  [11,14,12,17,15, 9, 8,13,12,15,16,11, 9,14,17,12,10,15,16,13,12],
+  // strain & kcal below are REAL — derived from Strava (relative effort & workout calories)
+  strain:  [0,2.8,9.5,13.4,10.5,0,0,16.1,14.4,5.2,13.2,0,19.8,0,10.3,14.1,13.2,13.2,7.6,12.3,0],
+  relEffort:[0,34,114,161,126,0,0,193,173,62,158,0,237,0,124,169,158,158,91,148,0],
+  workoutMin:[0,8,54,41,56,0,0,56,42,25,41,0,65,0,88,47,61,51,61,53,0],
   sleepEff:[82,88,85,74,80,90,93,89,91,88,84,80,90,92,86,83,89,91,87,85,90],
   sleepHrs:[6.8,7.4,7.1,6.2,6.9,7.8,8.1,7.5,7.7,7.4,7.1,6.8,7.8,8.0,7.3,7.0,7.6,7.7,7.4,7.2,7.8],
   hrv:     [48,55,52,41,46,61,66,63,68,60,57,53,64,67,58,55,62,66,61,57,66],
@@ -507,12 +527,14 @@ const DATA={
   spo2:    [96,97,97,95,96,98,98,97,97,97,96,96,98,98,97,96,97,98,97,97,97],
   cardio:  [120,165,140,180,150,95,80,150,172,160,170,130,100,175,185,140,110,170,180,150,140],
   steps:   [8420,11240,9870,7650,10120,13980,9210,11760,12340,10500,9200,8800,13200,14100,9600,8400,12800,13500,10200,9100,11800],
-  kcal:    [540,720,610,470,650,910,580,760,805,680,600,560,880,920,610,540,820,870,660,590,780],
+  kcal:    [0,92,499,467,574,0,0,501,464,202,308,0,641,0,663,503,669,483,467,432,0], // Strava workout energy
   weight:  [94.6,94.4,94.3,94.1,94.0,93.8,93.7,93.6,93.5,93.4,93.3,93.2,93.1,93.0,92.9,92.8,92.7,92.65,92.6,92.55,92.5],
   bodyfat: [18.4,18.3,18.2,18.1,18.0,17.9,17.85,17.8,17.7,17.6,17.55,17.5,17.45,17.4,17.3,17.25,17.2,17.15,17.1,17.05,17.0],
   muscle:  [72.2,72.25,72.3,72.35,72.4,72.45,72.5,72.55,72.6,72.62,72.65,72.7,72.72,72.75,72.78,72.8,72.85,72.88,72.9,72.93,72.95],
   bodyWater:[58.5,58.6,58.6,58.7,58.8,58.9,59.0,59.1,59.2,59.3,59.3,59.4,59.5,59.5,59.6,59.7,59.7,59.8,59.85,59.88,59.9]
 };
+// Real Strava sessions ("Build" focus). dom → activity. Rest days omitted.
+const STRAVA={9:{n:'Strength Training',m:8,k:92,re:34},10:{n:'Strength Training',m:54,k:499,re:114},11:{n:'Strength Training',m:41,k:467,re:161},12:{n:'Strength Training',m:56,k:574,re:126},15:{n:'Morning Weight Training',m:56,k:501,re:193},16:{n:'Strength Training',m:42,k:464,re:173},17:{n:'Morning Weight Training',m:25,k:202,re:62},18:{n:'Morning Weight Training',m:41,k:308,re:158},20:{n:'Morning Weight Training',m:65,k:641,re:237},22:{n:'Morning Weight Training',m:88,k:663,re:124},23:{n:'Strength Training',m:47,k:503,re:169},24:{n:'Strength Training',m:61,k:669,re:158},25:{n:'Morning Weight Training',m:51,k:483,re:158},26:{n:'Morning Weight Training',m:61,k:467,re:91},27:{n:'Morning Weight Training',m:53,k:432,re:148}};
 DATA.totalEnergy=DATA.kcal.map(k=>k+RESTING_KCAL);
 const last=a=>a[a.length-1], first=a=>a[0], avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
 
@@ -612,7 +634,7 @@ function barChart(host,data,opts={}){
     const c=colorAt(i);const gid='b'+i+Math.random().toString(36).slice(2,6);const defs=el('defs');const lg=el('linearGradient',{id:gid,x1:0,y1:0,x2:0,y2:1});
     lg.appendChild(el('stop',{offset:'0%','stop-color':c}));lg.appendChild(el('stop',{offset:'100%','stop-color':c,'stop-opacity':.35}));
     defs.appendChild(lg);s.appendChild(defs);s.appendChild(el('rect',{x,y,width:bw,height:h,rx:4,fill:`url(#${gid})`}));});
-  [0,Math.floor(n/2),n-1].forEach(i=>{const x=pad.l+i*((W-pad.l-pad.r)/n)+(W-pad.l-pad.r)/n/2;const t=el('text',{x,y:H-4,'text-anchor':'middle',class:'axis'});t.textContent=DATES[i];s.appendChild(t);});
+  if(!opts.noLabels){[0,Math.floor(n/2),n-1].forEach(i=>{const x=pad.l+i*((W-pad.l-pad.r)/n)+(W-pad.l-pad.r)/n/2;const t=el('text',{x,y:H-4,'text-anchor':'middle',class:'axis'});t.textContent=DATES[i];s.appendChild(t);});}
   host.appendChild(s);
 }
 function ring(host,{value,max=100,color,size=120}){
@@ -642,7 +664,7 @@ function rangeBar(host,{value,lo,hi,min,max}){
 /* =========================== RINGS =========================== */
 function ringDefs(){return[
   {name:'Recovery',color:'#16EC9A',value:last(DATA.recovery),unit:'%',big:last(DATA.recovery),delta:`+${last(DATA.recovery)-DATA.recovery[7]} vs yesterday`,up:true},
-  {name:'Activity',color:'#1FB8FF',value:last(DATA.strain),max:21,unit:'strain',big:last(DATA.strain).toFixed(1),delta:'moderate day',up:true},
+  {name:'Activity',color:'#1FB8FF',value:last(DATA.strain),max:21,unit:'strain',big:last(DATA.strain).toFixed(1),delta:STRAVA[TODAY_DOM]?`${STRAVA[TODAY_DOM].n}`:'rest day',up:true},
   {name:'Sleep',color:'#8B7DFF',value:last(DATA.sleepEff),unit:'eff.',big:last(DATA.sleepEff),delta:`${last(DATA.sleepHrs)}h logged`,up:true},
   {name:'Body',color:'#FFB020',value:100-last(DATA.bodyfat),unit:'lean',big:(100-last(DATA.bodyfat)).toFixed(1),delta:`${last(DATA.bodyfat)}% fat`,up:true},
 ];}
@@ -851,6 +873,22 @@ function renderTrends(){
     card.innerHTML=`<span class="label">${c.k}</span><div class="big-num" style="font-size:26px">${c.b}${c.u}</div><div class="delta ${improved?'up':'down'}">${d>0?'+':''}${d.toFixed(1)}${c.u} · ${improved?'improved':'watch'}</div>`;host.appendChild(card);});
 
   renderCalendar();
+  renderTraining();
+}
+
+/* =========================== TRAINING LOG (Strava) =========================== */
+function renderTraining(){
+  const doms=Object.keys(STRAVA).map(Number).sort((a,b)=>a-b);
+  const reSeries=doms.map(d=>({dom:d,re:STRAVA[d].re}));
+  // relative-effort bar chart across sessions
+  barChart(document.getElementById('reChart'),reSeries.map(x=>x.re),{h:110,color:'#1FB8FF',hot:'#16EC9A',noLabels:true});
+  const weekRE=doms.filter(d=>d>=22).reduce((a,d)=>a+STRAVA[d].re,0);
+  document.getElementById('trainPill').textContent=`${doms.length} sessions · ${weekRE} this week`;
+  const log=document.getElementById('trainLog');log.innerHTML='';
+  doms.slice().reverse().forEach(d=>{const w=STRAVA[d];const dt=new Date(CAL_YEAR,CAL_MONTH,d).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+    const row=document.createElement('div');row.className='t';
+    row.innerHTML=`<div class="ic">🏋</div><div class="nm">${w.n}<small>${dt} · ${w.m} min · ${w.k} kcal</small></div><div class="re">${w.re}<small>rel. effort</small></div>`;
+    log.appendChild(row);});
 }
 
 /* =========================== DAILY CALENDAR =========================== */
@@ -902,8 +940,8 @@ function renderCalendar(){
     const c=document.createElement('div');
     if(hasData(dom)){
       const comp=dayComposite(dom);
-      c.className='cal has'+(dom===TODAY_DOM?' today':'')+(dom===selectedDom?' sel':'');
-      c.innerHTML=`<span class="dn">${dom}</span><span class="dot ${comp}"></span>`;
+      c.className='cal has'+(dom===TODAY_DOM?' today':'')+(dom===selectedDom?' sel':'')+(STRAVA[dom]?' trained':'');
+      c.innerHTML=`<span class="dn">${dom}</span><span class="dot ${comp}"></span>`+(STRAVA[dom]?`<span class="lift">🏋</span>`:'');
       c.onclick=()=>{selectedDom=dom;renderCalendar();renderDayDetail();};
     }else{
       const future=dom>TODAY_DOM;
@@ -948,7 +986,14 @@ function renderDayDetail(){
 
   const summary = isToday
     ? `Today is tracking <b>${STATUS_WORD[comp].toLowerCase()}</b>. Deltas show movement since day 1 of the block.`
-    : `Selected <b>${dateStr}</b> — a <b>${STATUS_WORD[comp].toLowerCase()}</b> day. The right column shows how each measure changed <b>${cmpLabel}</b> (the 16th).`;
+    : `Selected <b>${dateStr}</b> — a <b>${STATUS_WORD[comp].toLowerCase()}</b> day. The right column shows how each measure changed <b>${cmpLabel}</b> (the 28th).`;
+
+  const w=STRAVA[selectedDom];
+  const workout = w
+    ? `<div class="dayrow" style="border-color:rgba(31,184,255,.35)"><span style="font-size:16px">🏋</span>
+        <div class="nm">${w.n}<small>Strava · ${w.m} min · ${w.k} kcal</small></div>
+        <div class="dd up">RE ${w.re}</div></div>`
+    : `<div class="note" style="margin-top:10px">🛌 <b>Rest day</b> — no Strava session logged.</div>`;
 
   host.innerHTML=`
     <div class="row-between">
@@ -960,6 +1005,8 @@ function renderDayDetail(){
       <span class="pill ${comp==='g'?'good':comp==='a'?'warn':'bad'}">${STATUS_WORD[comp]}</span>
     </div>
     <div class="note" style="margin-top:10px">${summary}</div>
+    <div class="row-between" style="margin-top:14px"><span class="label">Training</span><span class="label">Strava</span></div>
+    ${workout}
     <div class="row-between" style="margin-top:14px"><span class="label">Measure</span><span class="label">${isToday?'today':'that day'} · change ${cmpLabel}</span></div>
     <div class="daylist">${rows}</div>`;
 }
