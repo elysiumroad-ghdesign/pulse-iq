@@ -328,7 +328,7 @@ svg{display:block;}
       </div>
     </div>
 
-    <div class="section-title"><h3>Heart-rate zones</h3><span>today's training</span></div>
+    <div class="section-title"><h3>Heart-rate zones</h3><span>Strava · last session 27 Jun</span></div>
     <div class="card" data-walk="zones">
       <div class="zones" id="hrZones"></div>
       <div class="note" id="zoneNote"></div>
@@ -715,12 +715,15 @@ function renderVitals(){
 
   // Strain detail
   const sVal=last(DATA.strain);const sLo=8,sHi=15;const sState=classify(sVal,sLo,sHi);const sp=STATE_PILL[sState];
+  const wToday=STRAVA[TODAY_DOM];
   document.getElementById('strainVal').innerHTML=`${sVal.toFixed(1)}<small style="font-size:16px;color:var(--muted)"> / 21</small>`;
-  const spill=document.getElementById('strainPill');spill.className='pill '+sp.c;spill.textContent=sp.t;
-  document.getElementById('strainDur').textContent='1h 04m';
+  const spill=document.getElementById('strainPill');spill.className='pill '+sp.c;spill.textContent=wToday?sp.t:'Rest day';
+  document.getElementById('strainDur').textContent=wToday?`${wToday.m} min`:'—';
   document.getElementById('strainKcal').innerHTML=`${last(DATA.kcal)}<small> kcal</small>`;
   barChart(document.getElementById('strainTrend'),DATA.strain,{h:104,colorAt:i=>{const c=classify(DATA.strain[i],sLo,sHi);return c==='normal'?'#16EC9A':c==='above'?'#FFB020':'#1FB8FF';}});
-  document.getElementById('strainNote').innerHTML=`Today's strain of <b>${sVal.toFixed(1)}</b> sits in your <b>optimal range (8–15)</b>. Bars in <span style="color:var(--body)">amber</span> were over-reaching days, <span style="color:var(--activity)">blue</span> were under-loaded recovery days.`;
+  document.getElementById('strainNote').innerHTML=wToday
+    ? `Today's strain of <b>${sVal.toFixed(1)}</b> (Strava relative effort). Green bars are optimal days, <span style="color:var(--body)">amber</span> over-reaching, <span style="color:var(--activity)">blue</span> lighter sessions.`
+    : `<b>Rest day</b> — no session logged. Strain bars below are real Strava relative effort across the block (green optimal, <span style="color:var(--body)">amber</span> hard, <span style="color:var(--activity)">blue</span> light).`;
 
   // Energy
   document.getElementById('enrgTotal').textContent=last(DATA.totalEnergy).toLocaleString();
@@ -728,19 +731,19 @@ function renderVitals(){
   document.getElementById('enrgRest').innerHTML=`${RESTING_KCAL.toLocaleString()}<small> kcal</small>`;
   lineChart(document.getElementById('enrgTrend'),[{data:DATA.totalEnergy,color:'#FFB020',fill:true}],{h:104,labels:true});
 
-  // HR zones
+  // HR zones — REAL, from Strava heart-rate stream (last session, 27 Jun)
   const zones=[
-    {n:'Z1 Very light',m:26,c:'#1FB8FF',r:'104–124 bpm'},
-    {n:'Z2 Light',m:21,c:'#16EC9A',r:'124–143 bpm'},
-    {n:'Z3 Moderate',m:13,c:'#C9E84B',r:'143–162 bpm'},
-    {n:'Z4 Hard',m:7,c:'#FFB020',r:'162–171 bpm'},
-    {n:'Z5 Max',m:2,c:'#FF5470',r:'171+ bpm'},
+    {n:'Z1 Very light',m:0.8,c:'#1FB8FF',r:'≤112 bpm'},
+    {n:'Z2 Light',m:10.9,c:'#16EC9A',r:'113–140 bpm'},
+    {n:'Z3 Moderate',m:7.1,c:'#C9E84B',r:'141–154 bpm'},
+    {n:'Z4 Hard',m:31.6,c:'#FFB020',r:'155–168 bpm'},
+    {n:'Z5 Max',m:2.7,c:'#FF5470',r:'169+ bpm'},
   ];
   const maxM=Math.max(...zones.map(z=>z.m)),totM=zones.reduce((a,b)=>a+b.m,0);
   const zh=document.getElementById('hrZones');zh.innerHTML='';
   zones.forEach(z=>{const d=document.createElement('div');d.className='z';
     d.innerHTML=`<div class="zn">${z.n}</div><div class="zb"><i style="width:${z.m/maxM*100}%;background:${z.c}"></i></div><div class="zv">${z.m}m</div>`;zh.appendChild(d);});
-  document.getElementById('zoneNote').innerHTML=`<b>${totM} min</b> elevated today, the bulk in <b>Z1–Z2</b> (aerobic base). Only <b>9 min</b> in Z4–Z5 — efficient, low-cost training that builds fitness without spiking fatigue.`;
+  document.getElementById('zoneNote').innerHTML=`Last session (27 Jun): <b>${totM.toFixed(0)} min</b>, avg HR <b>153</b>, max <b>171</b>. The bulk sat in <b>Z4 (hard)</b> — typical of heavy strength work where HR stays elevated between sets.`;
 }
 
 /* =========================== BODY =========================== */
