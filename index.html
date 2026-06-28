@@ -242,6 +242,11 @@ svg{display:block;}
 .dd.up{color:var(--recovery);}.dd.down{color:var(--coral);}.dd.flat{color:var(--faint);}
 .daystatus{display:flex;align-items:center;gap:12px;}
 .daystatus .ring{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:15px;font-weight:800;flex:0 0 auto;}
+.insight .ico svg{width:17px;height:17px;}
+.calnav{width:30px;height:30px;border-radius:50%;border:1px solid var(--stroke);background:var(--card-strong);color:var(--activity);font-size:15px;font-weight:700;cursor:pointer;display:inline-grid;place-items:center;line-height:1;}
+.calnav:disabled{color:var(--faint);cursor:default;}
+.calhead{display:flex;align-items:center;gap:8px;}
+.calhead .mlbl{min-width:104px;text-align:center;color:var(--txt);font-weight:600;font-size:13px;}
 </style>
 </head>
 <body>
@@ -293,9 +298,10 @@ svg{display:block;}
 
     <div class="section-title"><h3>Coach insights</h3><span>week commencing 8 Jun</span></div>
     <div class="card" data-walk="insights">
-      <div class="insight"><div class="ico" style="background:rgba(22,236,154,.16)">💪</div><div><div class="h">Consistent, strong, building</div><div class="b">INSMART: muscle mass <b>72.95 kg</b> (Optimal), muscle rate <b>78.8%</b> (Excellent). Strava: <b>15 strength sessions</b> this block — biggest effort on the 20th (RE 237). Your "Build" focus is showing.</div></div></div>
-      <div class="insight"><div class="ico" style="background:rgba(255,84,112,.16)">⚖️</div><div><div class="h">Weight &amp; visceral fat are the focus</div><div class="b">Weight <b>92.5 kg</b> and BMI <b>28.9</b> read High, and visceral fat <b>11.0</b> is in the Alert band — even though body fat (<b>17%</b>) is healthy. The lever is trimming visceral/abdominal fat.</div></div></div>
-      <div class="insight"><div class="ico" style="background:rgba(255,176,32,.16)">🔥</div><div><div class="h">Nudge BMR up</div><div class="b">BMR <b>2028 kcal</b> is just below standard (~2063) and body age reads <b>50</b>. Resistance work + protein lifts metabolism and shifts fat without costing muscle.</div></div></div>
+      <div class="insight"><div class="ico" style="background:rgba(22,236,154,.16)"><svg viewBox="0 0 24 24" fill="none" stroke="#16EC9A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 7-7"/><path d="M14 8h6v6"/></svg></div><div><div class="h">Consistent, strong, building</div><div class="b">INSMART: muscle mass <b>72.95 kg</b> (Optimal), muscle rate <b>78.8%</b> (Excellent). Strava: <b>15 strength sessions</b> this block — biggest effort on the 20th (RE 237). Your "Build" focus is showing.</div></div></div>
+      <div class="insight"><div class="ico" style="background:rgba(255,84,112,.16)"><svg viewBox="0 0 24 24" fill="none" stroke="#FF5470" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.4"/></svg></div><div><div class="h">Weight &amp; visceral fat are the focus</div><div class="b">Weight <b>92.5 kg</b> and BMI <b>28.9</b> read High, and visceral fat <b>11.0</b> is in the Alert band — even though body fat (<b>17%</b>) is healthy. The lever is trimming visceral/abdominal fat.</div></div></div>
+      <div class="insight"><div class="ico" style="background:rgba(255,176,32,.16)"><svg viewBox="0 0 24 24" fill="none" stroke="#FFB020" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c2.6 3.6 4 5.6 4 8a4 4 0 0 1-8 0c0-1.6.8-3 1.9-4 .4 1.7 2.1 1.4 2.1-1 0-1.3 0-2.3 0-3z"/></svg></div><div><div class="h">Nudge BMR up</div><div class="b">BMR <b>2028 kcal</b> is just below standard (~2063) and body age reads <b>50</b>. Resistance work + protein lifts metabolism and shifts fat without costing muscle.</div></div></div>
+      <div class="insight"><div class="ico" style="background:rgba(31,184,255,.16)"><svg viewBox="0 0 24 24" fill="none" stroke="#1FB8FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.6.6 1 1.3 1 2.5h6c0-1.2.4-1.9 1-2.5A6 6 0 0 0 12 3z"/></svg></div><div><div class="h" id="tipTitle">Tip of the day</div><div class="b" id="tipBody"></div></div></div>
     </div>
   </div>
 
@@ -397,6 +403,14 @@ svg{display:block;}
         <div class="note">Standard-Muscle build with a lot of lean mass. Nudging BMR up (resistance work + protein) helps shift fat without losing muscle.</div>
       </div>
     </div>
+
+    <div class="section-title"><h3>What to do with this</h3><span>InBody guidance</span></div>
+    <div class="card" data-walk="inbody-guidance">
+      <div class="insight"><div class="ico" style="background:rgba(255,176,32,.16)"><svg viewBox="0 0 24 24" fill="none" stroke="#FFB020" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div><div><div class="h">Visceral fat 11 — your #1 lever</div><div class="b">In the <b>Alert</b> band. It responds fastest to <b>daily steps + a modest calorie deficit</b>. This is the most health-relevant number to move, even though your body fat % is healthy.</div></div></div>
+      <div class="insight"><div class="ico" style="background:rgba(31,184,255,.16)"><svg viewBox="0 0 24 24" fill="none" stroke="#1FB8FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.7S5 10 5 14.5a7 7 0 0 0 14 0C19 10 12 2.7 12 2.7z"/></svg></div><div><div class="h">Body water 59.9% — good</div><div class="b">Healthy hydration. Keep it up around lifts — water supports strength output and recovery.</div></div></div>
+      <div class="insight"><div class="ico" style="background:rgba(22,236,154,.16)"><svg viewBox="0 0 24 24" fill="none" stroke="#16EC9A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5l11 11M5 8l-2 2 3 3 2-2M19 16l2-2-3-3-2 2M4 12l-1 1M20 12l1-1"/></svg></div><div><div class="h">Skeletal muscle 72.95 kg — your engine</div><div class="b">Protect it while leaning out: <b>progressive overload</b> + <b>~1.6–2.2 g/kg protein</b>. More muscle also lifts your BMR over time.</div></div></div>
+      <div class="insight"><div class="ico" style="background:rgba(255,176,32,.16)"><svg viewBox="0 0 24 24" fill="none" stroke="#FFB020" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c2.6 3.6 4 5.6 4 8a4 4 0 0 1-8 0c0-1.6.8-3 1.9-4 .4 1.7 2.1 1.4 2.1-1 0-1.3 0-2.3 0-3z"/></svg></div><div><div class="h">BMR 2028 kcal — nudge it up</div><div class="b">Just below standard (~2063). Building muscle and regular resistance work raises it, making fat loss easier without eating less.</div></div></div>
+    </div>
   </div>
 
   <!-- ===================== SLEEP ===================== -->
@@ -455,7 +469,13 @@ svg{display:block;}
         <div id="kcalChart" style="margin-top:10px"></div>
       </div>
     </div>
-    <div class="section-title"><h3>June 2026 · daily log</h3><span>tap a day for detail</span></div>
+    <div class="section-title"><h3>Daily log</h3>
+      <span class="calhead">
+        <button class="calnav" id="calPrev" onclick="calShift(-1)">‹</button>
+        <span class="mlbl" id="calMonthLbl">June 2026</span>
+        <button class="calnav" id="calNext" onclick="calShift(1)">›</button>
+      </span>
+    </div>
     <div class="card" data-walk="calendar">
       <div class="calweek" id="calWeekHead"></div>
       <div class="calgrid" id="calGrid"></div>
@@ -677,6 +697,18 @@ function renderRings(){
 function renderToday(){
   lineChart(document.getElementById('readySpark'),[{data:DATA.recovery,color:'#16EC9A',fill:true}],{h:70,labels:false});
   document.getElementById('readyNote').innerHTML=`Readiness blends <b>HRV</b>, <b>resting HR</b>, sleep &amp; prior strain. Up <b>+24 points</b> from your week-low on the 11th — green light for a higher-intensity session.`;
+  // Daily-rotating tip (changes each calendar day)
+  const tips=[
+    "Front-load water on training days to protect HRV.",
+    "Protein at every meal preserves muscle while leaning out.",
+    "Lights down ~45 min before bed lifts your deep sleep.",
+    "A 10-minute walk after meals blunts glucose spikes.",
+    "Cool room (~18°C) deepens slow-wave sleep.",
+    "Add one Zone-2 cardio block to grow your aerobic base.",
+    "Visceral fat responds best to consistent daily steps."
+  ];
+  const day=Math.floor(Date.now()/86400000);
+  document.getElementById('tipBody').textContent=tips[((day%tips.length)+tips.length)%tips.length];
 }
 
 /* =========================== VITALS =========================== */
@@ -859,9 +891,9 @@ function renderTrends(){
   document.getElementById('stepsAvg').textContent=Math.round(avg(DATA.steps)).toLocaleString();
   document.getElementById('stepsTgtLbl').textContent=stepsTarget.toLocaleString();
   const sp=document.getElementById('stepsPill');const hit=avg(DATA.steps)>=stepsTarget;sp.className='pill '+(hit?'good':'warn');sp.textContent=hit?'on target':'below target';
-  barChart(document.getElementById('stepsChart'),DATA.steps,{h:120,colorAt:i=>DATA.steps[i]>=stepsTarget?'#16EC9A':'#1FB8FF'});
+  barChart(document.getElementById('stepsChart'),DATA.steps,{h:84,colorAt:i=>DATA.steps[i]>=stepsTarget?'#16EC9A':'#1FB8FF'});
   document.getElementById('kcalAvg').textContent=Math.round(avg(DATA.totalEnergy)).toLocaleString();
-  barChart(document.getElementById('kcalChart'),DATA.totalEnergy,{h:120,color:'#FFB020',hot:'#FF5470'});
+  barChart(document.getElementById('kcalChart'),DATA.totalEnergy,{h:84,color:'#FFB020',hot:'#FF5470'});
 
   const cards=[
     {k:'Recovery',a:first(DATA.recovery),b:last(DATA.recovery),u:'%',inv:false},
@@ -929,31 +961,38 @@ function dayComposite(dom){
 const STATUS_COLOR={g:'#16EC9A',a:'#FFB020',r:'#FF5470'};
 const STATUS_WORD={g:'On track',a:'Mixed',r:'Needs attention'};
 
+let calOffset=0; // months from the data month (June 2026). 0 = current; negative = earlier
+function calShift(d){ const n=calOffset+d; if(n>0) return; calOffset=n; renderCalendar(); }
 function renderCalendar(){
   // weekday header (Mon-first)
   const wd=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
   document.getElementById('calWeekHead').innerHTML=wd.map(d=>`<div class="wd">${d[0]}</div>`).join('');
   const grid=document.getElementById('calGrid');grid.innerHTML='';
-  const firstDay=new Date(CAL_YEAR,CAL_MONTH,1);
-  // JS getDay: 0=Sun..6=Sat. Convert to Mon-first offset.
-  let lead=(firstDay.getDay()+6)%7;
-  const daysInMonth=new Date(CAL_YEAR,CAL_MONTH+1,0).getDate();
+  // viewed month = data month (June 2026) shifted by calOffset
+  const view=new Date(CAL_YEAR,CAL_MONTH+calOffset,1);
+  const vy=view.getFullYear(), vm=view.getMonth();
+  const isDataMonth=(vy===CAL_YEAR && vm===CAL_MONTH);
+  document.getElementById('calMonthLbl').textContent=view.toLocaleDateString('en-GB',{month:'long',year:'numeric'});
+  const nextBtn=document.getElementById('calNext');if(nextBtn)nextBtn.disabled=(calOffset>=0);
+  const today=new Date(CAL_YEAR,CAL_MONTH,TODAY_DOM);
+  let lead=(view.getDay()+6)%7;
+  const daysInMonth=new Date(vy,vm+1,0).getDate();
   for(let i=0;i<lead;i++){const c=document.createElement('div');c.className='cal empty';grid.appendChild(c);}
   for(let dom=1;dom<=daysInMonth;dom++){
     const c=document.createElement('div');
-    if(hasData(dom)){
+    if(isDataMonth && hasData(dom)){
       const comp=dayComposite(dom);
       c.className='cal has'+(dom===TODAY_DOM?' today':'')+(dom===selectedDom?' sel':'')+(STRAVA[dom]?' trained':'');
       c.innerHTML=`<span class="dn">${dom}</span><span class="dot ${comp}"></span>`+(STRAVA[dom]?`<span class="lift">🏋</span>`:'');
       c.onclick=()=>{selectedDom=dom;renderCalendar();renderDayDetail();};
     }else{
-      const future=dom>TODAY_DOM;
+      const future=new Date(vy,vm,dom)>today;
       c.className='cal '+(future?'future':'empty');
       c.innerHTML=`<span class="dn">${dom}</span>`;
     }
     grid.appendChild(c);
   }
-  renderDayDetail();
+  if(isDataMonth) renderDayDetail();
 }
 
 function renderDayDetail(){
